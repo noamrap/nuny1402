@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לנוני שלי ❤️</title>
+    <style>
+        body {
+            background-color: #ffc0cb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 350px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .heart-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            min-height: 60px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        .btn-yes {
+            background-color: #ff477e;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 126, 0.4);
+        }
+
+        .btn-no {
+            background-color: #e0e0e0;
+            color: #555;
+            position: absolute;
+            z-index: 1000;
+        }
+
+        #step-2 {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="heart-icon">💖</div>
+
+        <div id="step-1">
+            <h1>נוני, רוצה להיות הדייט שלי ליום האהבה?</h1>
+            <p>14.2.2026 💘</p>
+
+            <div class="buttons-container">
+                <button class="btn-yes" onclick="showStep2()">כן! ✨</button>
+                <button class="btn-no" id="noBtn"
+                        onmouseover="moveButton()"
+                        onclick="moveButton(); return false;"
+                        ontouchstart="moveButton(); return false;">
+                    לא
+                </button>
+            </div>
+        </div>
+
+        <div id="step-2">
+            <h1>בטוחה? 😏</h1>
+            <div class="buttons-container">
+                <button class="btn-yes" onclick="sendWhatsapp()">ברור! 😍</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            const maxX = window.innerWidth - btn.offsetWidth - 20;
+            const maxY = window.innerHeight - btn.offsetHeight - 20;
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+            btn.style.position = 'fixed';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        function showStep2() {
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        }
+
+        function sendWhatsapp() {
+            const phoneNumber = "972548349998";
+            const text = "ברור נוני שלי❣️";
+            const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
