@@ -1,152 +1,311 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>לנוני שלי ❤️</title>
+    <title>חידון תכנות: OOP, SQL ואלגוריתמים</title>
     <style>
-        body {
-            background-color: #ffc0cb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            text-align: center;
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --fail-color: #c0392b;
+            --bg-color: #ecf0f1;
         }
 
-        .card {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 90%;
-            width: 350px;
-            position: relative;
-            z-index: 1;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
         }
 
         h1 {
-            color: #d63384;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            color: #888;
-            font-size: 18px;
+            text-align: center;
+            color: var(--primary-color);
             margin-bottom: 30px;
         }
 
-        .heart-icon {
-            font-size: 50px;
+        .intro {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-            animation: pulse 1.5s infinite;
+            text-align: center;
         }
 
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        .question-card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
 
-        .buttons-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            min-height: 60px;
+        .question-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .question-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .options label:hover {
+            background-color: #e8f4f8;
+        }
+
+        input[type="radio"] {
+            margin-left: 10px;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s;
-        }
-
-        .btn-yes {
-            background-color: #ff477e;
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 71, 126, 0.4);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
         }
 
-        .btn-no {
-            background-color: #e0e0e0;
-            color: #555;
-            position: absolute;
-            z-index: 1000;
+        button:hover {
+            background-color: #2980b9;
         }
 
-        #step-2 {
+        #result {
             display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+            z-index: 100;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .riddle-text {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-color);
+            white-space: pre-line; /* מאפשר ירידת שורה */
+            margin-top: 20px;
+            border: 2px dashed var(--accent-color);
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+
+        .fail-text {
+            color: var(--fail-color);
+            font-size: 1.2em;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="heart-icon">💖</div>
+    <h1>אתגר התכנות הגדול</h1>
+    
+    <div class="intro">
+        <p>ענה על 10 שאלות בנושאי OOP, שיטות מיון ו-SQL.</p>
+        <p><strong>עליך לענות נכון על לפחות 8 שאלות כדי לעבור ולקבל את המסר הסודי.</strong></p>
+    </div>
 
-        <div id="step-1">
-            <h1>נוני, רוצה להיות הדייט שלי ליום האהבה?</h1>
-            <p>14.2.2026 💘</p>
+    <form id="quizForm">
+        <div id="questions-container"></div>
+        <button type="button" onclick="checkAnswers()">הגש תשובות</button>
+    </form>
 
-            <div class="buttons-container">
-                <button class="btn-yes" onclick="showStep2()">כן! ✨</button>
-                <button class="btn-no" id="noBtn"
-                        onmouseover="moveButton()"
-                        onclick="moveButton(); return false;"
-                        ontouchstart="moveButton(); return false;">
-                    לא
-                </button>
-            </div>
-        </div>
-
-        <div id="step-2">
-            <h1>בטוחה? 😏</h1>
-            <div class="buttons-container">
-                <button class="btn-yes" onclick="sendWhatsapp()">ברור! 😍</button>
-            </div>
-        </div>
+    <div id="overlay"></div>
+    <div id="result">
+        <h2 id="score-title"></h2>
+        <p id="score-text"></p>
+        <div id="secret-message"></div>
+        <button onclick="closeModal()" style="margin-top: 20px; background-color: #95a5a6;">סגור</button>
     </div>
 
     <script>
-        function moveButton() {
-            const btn = document.getElementById('noBtn');
-            const maxX = window.innerWidth - btn.offsetWidth - 20;
-            const maxY = window.innerHeight - btn.offsetHeight - 20;
-            const randomX = Math.floor(Math.random() * maxX);
-            const randomY = Math.floor(Math.random() * maxY);
-            btn.style.position = 'fixed';
-            btn.style.left = randomX + 'px';
-            btn.style.top = randomY + 'px';
+        // מאגר השאלות - OOP, SQL, Sorting
+        const questions = [
+            {
+                q: "1. (OOP) איזה עקרון מאפשר למחלקה יורשת לספק מימוש ספציפי למתודה שכבר מוגדרת במחלקת האב?",
+                options: ["Encapsulation (כימוס)", "Polymorphism (רב-צורתיות)", "Abstraction (הפשטה)", "Singleton"],
+                answer: 1 // Polymorphism
+            },
+            {
+                q: "2. (SQL) איזו פקודה משמשת לשליפת נתונים מטבלה, אך מסננת את התוצאות **לאחר** ביצוע הקבצה (GROUP BY)?",
+                options: ["WHERE", "ORDER BY", "HAVING", "DISTINCT"],
+                answer: 2 // HAVING
+            },
+            {
+                q: "3. (Sorting) מהי סיבוכיות הזמן במקרה הגרוע (Worst Case) של Quick Sort?",
+                options: ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"],
+                answer: 2 // O(n^2)
+            },
+            {
+                q: "4. (OOP) מה ההבדל העיקרי בין Interface ל-Abstract Class בג'אווה?",
+                options: ["מחלקה יכולה לרשת רק מחלקה אבסטרקטית אחת, אך לממש מספר ממשקים", "אין שום הבדל, זה רק עניין של סינטקס", "ב-Interface חייבים לממש בנאי (Constructor)", "Abstract Class לא יכול להכיל מתודות עם מימוש"],
+                answer: 0 // ירושה אחת vs מימוש רבים
+            },
+            {
+                q: "5. (SQL) איזה סוג של JOIN יחזיר את כל הרשומות מהטבלה השמאלית, גם אם אין התאמה בטבלה הימנית?",
+                options: ["INNER JOIN", "RIGHT JOIN", "LEFT JOIN", "CROSS JOIN"],
+                answer: 2 // LEFT JOIN
+            },
+            {
+                q: "6. (Sorting) איזה מאלגוריתמי המיון הבאים נחשב למיון יציב (Stable Sort)?",
+                options: ["Quick Sort", "Merge Sort", "Selection Sort", "Heap Sort"],
+                answer: 1 // Merge Sort
+            },
+            {
+                q: "7. (OOP) המילה השמורה 'static' בג'אווה מציינת ש...",
+                options: ["המשתנה שייך לאובייקט ספציפי בלבד", "לא ניתן לשנות את ערך המשתנה (קבוע)", "המשתנה/המתודה שייכים למחלקה עצמה ולא למופע ספציפי", "המשתנה נגיש רק מתוך המחלקה עצמה"],
+                answer: 2 // שייך למחלקה
+            },
+            {
+                q: "8. (SQL) כיצד נמחק את כל הנתונים מטבלה, אך נשמור את המבנה שלה, בצורה היעילה ביותר?",
+                options: ["DELETE FROM table", "DROP TABLE table", "TRUNCATE TABLE table", "REMOVE ALL FROM table"],
+                answer: 2 // TRUNCATE
+            },
+            {
+                q: "9. (Sorting) נתונה רשימה כמעט ממוינת לחלוטין. איזה אלגוריתם צפוי לעבוד הכי מהר?",
+                options: ["Bubble Sort (עם דגל)", "Merge Sort", "Quick Sort", "Selection Sort"],
+                answer: 0 // Bubble/Insertion works best on nearly sorted
+            },
+            {
+                q: "10. (OOP) מהי המטרה העיקרית של Encapsulation (כימוס)?",
+                options: ["לגרום לקוד לרוץ מהר יותר", "להסתיר את פרטי המימוש הפנימיים ולהגן על הנתונים", "לאפשר ירושה מרובה", "ליצור אובייקטים ללא שימוש ב-new"],
+                answer: 1 // Hiding implementation
+            }
+        ];
+
+        // פונקציה לרינדור השאלות
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                
+                let optionsHtml = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label>
+                            <input type="radio" name="q${index}" value="${optIndex}">
+                            ${opt}
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="question-title">${q.q}</div>
+                    <div class="options">${optionsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function showStep2() {
-            document.getElementById('step-1').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
+        // בדיקת תשובות
+        function checkAnswers() {
+            let score = 0;
+            let answeredAll = true;
+
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (!selected) {
+                    answeredAll = false;
+                } else if (parseInt(selected.value) === q.answer) {
+                    score++;
+                }
+            });
+
+            if (!answeredAll) {
+                alert("אנא ענה על כל השאלות לפני ההגשה!");
+                return;
+            }
+
+            showResult(score);
         }
 
-        function sendWhatsapp() {
-            const phoneNumber = "972548349998";
-            const text = "ברור נוני שלי❣️";
-            const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
+        // הצגת התוצאה
+        function showResult(score) {
+            const resultDiv = document.getElementById('result');
+            const overlay = document.getElementById('overlay');
+            const title = document.getElementById('score-title');
+            const text = document.getElementById('score-text');
+            const secretMessage = document.getElementById('secret-message');
+
+            resultDiv.style.display = 'block';
+            overlay.style.display = 'block';
+
+            if (score >= 8) {
+                title.innerText = `כל הכבוד! ציון: ${score}/10`;
+                title.style.color = "var(--success-color)";
+                text.innerText = "עברת את המבחן בהצלחה.";
+                
+                // ההודעה המבוקשת
+                secretMessage.innerHTML = `
+                    <div class="riddle-text">
+                        כל הכבוד ! כמה אפשרויות יש לערבוב חפיסת קלפים?
+                        וכמה זה בלי סימן קריאה עכשיו תחלקו ב18
+                        וכמה זה 3 סימן קריאה?
+                        זה הפעמים שתקפצו במקום
+                    </div>
+                `;
+            } else {
+                title.innerText = `נכשלת. ציון: ${score}/10`;
+                title.style.color = "var(--fail-color)";
+                text.innerText = "צריך לפחות 8 כדי לקבל את המסר הסודי. נסה שוב!";
+                secretMessage.innerHTML = "";
+            }
         }
+
+        function closeModal() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            if (document.getElementById('score-title').style.color === "var(--success-color)") {
+                // אופציונלי: איפוס הדף אחרי הצלחה
+                 location.reload();
+            }
+        }
+
+        // אתחול
+        renderQuestions();
+
     </script>
 </body>
 </html>
