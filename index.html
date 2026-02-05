@@ -2,309 +2,263 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>חידון תכנות: OOP, SQL ואלגוריתמים</title>
+    <title>הטיפוס אל הפסגה - משחק זוגי</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --success-color: #27ae60;
-            --fail-color: #c0392b;
-            --bg-color: #ecf0f1;
-        }
-
         body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB, #f0f8ff); /* שמיים */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: #333;
-            max-width: 800px;
+            text-align: center;
+        }
+
+        #gameCanvas {
+            background: linear-gradient(to top, #2e8b57 0%, #87CEEB 100%); /* הר */
+            border: 2px solid #333;
+            display: block;
             margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
 
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-        }
-
-        .intro {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .question-card {
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-
-        .question-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .question-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-        }
-
-        .options label {
-            display: block;
-            margin-bottom: 10px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-
-        .options label:hover {
-            background-color: #e8f4f8;
-        }
-
-        input[type="radio"] {
-            margin-left: 10px;
-        }
-
-        button {
-            display: block;
+        #ui {
+            position: absolute;
+            top: 10px;
             width: 100%;
-            padding: 15px;
-            background-color: var(--accent-color);
+            pointer-events: none;
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 20px;
+            text-shadow: 2px 2px 4px #000;
         }
 
-        button:hover {
-            background-color: #2980b9;
+        #status {
+            font-size: 24px;
+            font-weight: bold;
         }
 
-        #result {
+        #controls {
+            margin-top: 5px;
+            font-size: 16px;
+        }
+
+        /* מסך ניצחון */
+        #winScreen {
             display: none;
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             text-align: center;
-            width: 80%;
-            max-width: 500px;
-            z-index: 100;
+            z-index: 10;
         }
 
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 99;
+        .heart {
+            color: #e25555;
+            font-size: 100px;
+            animation: heartbeat 1s infinite;
         }
 
-        .riddle-text {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: var(--primary-color);
-            white-space: pre-line; /* מאפשר ירידת שורה */
-            margin-top: 20px;
-            border: 2px dashed var(--accent-color);
-            padding: 20px;
-            background-color: #f0f8ff;
-        }
-
-        .fail-text {
-            color: var(--fail-color);
-            font-size: 1.2em;
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <h1>אתגר התכנות הגדול</h1>
-    
-    <div class="intro">
-        <p>ענה על 10 שאלות בנושאי OOP, שיטות מיון ו-SQL.</p>
-        <p><strong>עליך לענות נכון על לפחות 8 שאלות כדי לעבור ולקבל את המסר הסודי.</strong></p>
+    <div id="ui">
+        <div id="status">התחמקו מהמכשולים והגיעו לפסגה!</div>
+        <div id="controls">
+            שחקן 1 (ימין): חצים ⬅️ ➡️ | שחקן 2 (שמאל): 🅰️ / 🇩
+        </div>
     </div>
 
-    <form id="quizForm">
-        <div id="questions-container"></div>
-        <button type="button" onclick="checkAnswers()">הגש תשובות</button>
-    </form>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <div id="overlay"></div>
-    <div id="result">
-        <h2 id="score-title"></h2>
-        <p id="score-text"></p>
-        <div id="secret-message"></div>
-        <button onclick="closeModal()" style="margin-top: 20px; background-color: #95a5a6;">סגור</button>
+    <div id="winScreen">
+        <div class="heart">❤️</div>
+        <h1 style="color: #fff; text-shadow: 2px 2px 4px #000;">הגעתם לפסגה!</h1>
     </div>
 
     <script>
-        // מאגר השאלות - OOP, SQL, Sorting
-        const questions = [
-            {
-                q: "1. (OOP) איזה עקרון מאפשר למחלקה יורשת לספק מימוש ספציפי למתודה שכבר מוגדרת במחלקת האב?",
-                options: ["Encapsulation (כימוס)", "Polymorphism (רב-צורתיות)", "Abstraction (הפשטה)", "Singleton"],
-                answer: 1 // Polymorphism
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const winScreen = document.getElementById('winScreen');
+        const statusDiv = document.getElementById('status');
+
+        // --- הגדרות תמונות (כאן מחליפים את התמונות) ---
+        const player1Img = new Image();
+        // שים כאן את התמונה של הבן/בת זוג 1
+        player1Img.src = "Screenshot_14.png";
+
+        const player2Img = new Image();
+        // שים כאן את התמונה של הבן/בת זוג 2
+        player2Img.src = "Screenshot_15.png"; 
+
+        // --- הגדרות משחק ---
+        let gameActive = true;
+        let progress = 0; // התקדמות לפסגה (0 עד 1000)
+        const goal = 1000;
+        let obstacles = [];
+        
+        // הגדרת השחקנים
+        const players = [
+            { 
+                x: 200, y: 500, width: 60, height: 60, 
+                color: 'blue', img: player1Img, 
+                keys: { left: 'KeyA', right: 'KeyD' },
+                isKissing: false 
             },
-            {
-                q: "2. (SQL) איזו פקודה משמשת לשליפת נתונים מטבלה, אך מסננת את התוצאות **לאחר** ביצוע הקבצה (GROUP BY)?",
-                options: ["WHERE", "ORDER BY", "HAVING", "DISTINCT"],
-                answer: 2 // HAVING
-            },
-            {
-                q: "3. (Sorting) מהי סיבוכיות הזמן במקרה הגרוע (Worst Case) של Quick Sort?",
-                options: ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"],
-                answer: 2 // O(n^2)
-            },
-            {
-                q: "4. (OOP) מה ההבדל העיקרי בין Interface ל-Abstract Class בג'אווה?",
-                options: ["מחלקה יכולה לרשת רק מחלקה אבסטרקטית אחת, אך לממש מספר ממשקים", "אין שום הבדל, זה רק עניין של סינטקס", "ב-Interface חייבים לממש בנאי (Constructor)", "Abstract Class לא יכול להכיל מתודות עם מימוש"],
-                answer: 0 // ירושה אחת vs מימוש רבים
-            },
-            {
-                q: "5. (SQL) איזה סוג של JOIN יחזיר את כל הרשומות מהטבלה השמאלית, גם אם אין התאמה בטבלה הימנית?",
-                options: ["INNER JOIN", "RIGHT JOIN", "LEFT JOIN", "CROSS JOIN"],
-                answer: 2 // LEFT JOIN
-            },
-            {
-                q: "6. (Sorting) איזה מאלגוריתמי המיון הבאים נחשב למיון יציב (Stable Sort)?",
-                options: ["Quick Sort", "Merge Sort", "Selection Sort", "Heap Sort"],
-                answer: 1 // Merge Sort
-            },
-            {
-                q: "7. (OOP) המילה השמורה 'static' בג'אווה מציינת ש...",
-                options: ["המשתנה שייך לאובייקט ספציפי בלבד", "לא ניתן לשנות את ערך המשתנה (קבוע)", "המשתנה/המתודה שייכים למחלקה עצמה ולא למופע ספציפי", "המשתנה נגיש רק מתוך המחלקה עצמה"],
-                answer: 2 // שייך למחלקה
-            },
-            {
-                q: "8. (SQL) כיצד נמחק את כל הנתונים מטבלה, אך נשמור את המבנה שלה, בצורה היעילה ביותר?",
-                options: ["DELETE FROM table", "DROP TABLE table", "TRUNCATE TABLE table", "REMOVE ALL FROM table"],
-                answer: 2 // TRUNCATE
-            },
-            {
-                q: "9. (Sorting) נתונה רשימה כמעט ממוינת לחלוטין. איזה אלגוריתם צפוי לעבוד הכי מהר?",
-                options: ["Bubble Sort (עם דגל)", "Merge Sort", "Quick Sort", "Selection Sort"],
-                answer: 0 // Bubble/Insertion works best on nearly sorted
-            },
-            {
-                q: "10. (OOP) מהי המטרה העיקרית של Encapsulation (כימוס)?",
-                options: ["לגרום לקוד לרוץ מהר יותר", "להסתיר את פרטי המימוש הפנימיים ולהגן על הנתונים", "לאפשר ירושה מרובה", "ליצור אובייקטים ללא שימוש ב-new"],
-                answer: 1 // Hiding implementation
+            { 
+                x: 600, y: 500, width: 60, height: 60, 
+                color: 'red', img: player2Img, 
+                keys: { left: 'ArrowLeft', right: 'ArrowRight' },
+                isKissing: false
             }
         ];
 
-        // פונקציה לרינדור השאלות
-        function renderQuestions() {
-            const container = document.getElementById('questions-container');
-            questions.forEach((q, index) => {
-                const card = document.createElement('div');
-                card.className = 'question-card';
-                
-                let optionsHtml = '';
-                q.options.forEach((opt, optIndex) => {
-                    optionsHtml += `
-                        <label>
-                            <input type="radio" name="q${index}" value="${optIndex}">
-                            ${opt}
-                        </label>
-                    `;
-                });
+        // ניהול מקלדת
+        const keysPressed = {};
+        window.addEventListener('keydown', (e) => keysPressed[e.code] = true);
+        window.addEventListener('keyup', (e) => keysPressed[e.code] = false);
 
-                card.innerHTML = `
-                    <div class="question-title">${q.q}</div>
-                    <div class="options">${optionsHtml}</div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // בדיקת תשובות
-        function checkAnswers() {
-            let score = 0;
-            let answeredAll = true;
-
-            questions.forEach((q, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (!selected) {
-                    answeredAll = false;
-                } else if (parseInt(selected.value) === q.answer) {
-                    score++;
-                }
-            });
-
-            if (!answeredAll) {
-                alert("אנא ענה על כל השאלות לפני ההגשה!");
+        // פונקציית עדכון ראשית
+        function update() {
+            if (!gameActive) {
+                if (progress >= goal) animateKiss();
                 return;
             }
 
-            showResult(score);
+            // עדכון התקדמות
+            progress += 1; // מהירות הטיפוס
+            statusDiv.innerText = `מרחק לפסגה: ${Math.max(0, goal - progress)} מטרים`;
+
+            // בדיקת ניצחון
+            if (progress >= goal) {
+                endGame();
+            }
+
+            // תנועת שחקנים
+            players.forEach(p => {
+                if (keysPressed[p.keys.left] && p.x > 0) p.x -= 5;
+                if (keysPressed[p.keys.right] && p.x < canvas.width - p.width) p.x += 5;
+            });
+
+            // יצירת מכשולים
+            if (Math.random() < 0.05) { // סיכוי של 5% כל פרייים למכשול חדש
+                obstacles.push({
+                    x: Math.random() * (canvas.width - 50),
+                    y: -50,
+                    width: 40 + Math.random() * 40,
+                    height: 40,
+                    speed: 3 + Math.random() * 3
+                });
+            }
+
+            // עדכון מכשולים
+            obstacles.forEach((obs, index) => {
+                obs.y += obs.speed; // המכשול נופל למטה (מדמה טיפוס למעלה)
+
+                // בדיקת התנגשות
+                players.forEach(p => {
+                    if (isColliding(p, obs)) {
+                        // פגיעה! אפשר להחליט מה קורה (איבוד נקודות או החזרה אחורה)
+                        p.y += 20; // רעידה קטנה
+                        if(p.y > canvas.height) p.y = canvas.height - p.width; // גבול תחתון
+                    } else {
+                        // החזרה הדרגתית למיקום מקורי אם לא נפגעים
+                        if(p.y > 500) p.y -= 1;
+                    }
+                });
+
+                // מחיקת מכשולים שיצאו מהמסך
+                if (obs.y > canvas.height) {
+                    obstacles.splice(index, 1);
+                }
+            });
         }
 
-        // הצגת התוצאה
-        function showResult(score) {
-            const resultDiv = document.getElementById('result');
-            const overlay = document.getElementById('overlay');
-            const title = document.getElementById('score-title');
-            const text = document.getElementById('score-text');
-            const secretMessage = document.getElementById('secret-message');
+        // בדיקת התנגשות פשוטה (מלבנים)
+        function isColliding(rect1, rect2) {
+            return (rect1.x < rect2.x + rect2.width &&
+                    rect1.x + rect1.width > rect2.x &&
+                    rect1.y < rect2.y + rect2.height &&
+                    rect1.y + rect1.height > rect2.y);
+        }
 
-            resultDiv.style.display = 'block';
-            overlay.style.display = 'block';
+        // ציור המשחק
+        function draw() {
+            // ניקוי מסך
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (score >= 8) {
-                title.innerText = `כל הכבוד! ציון: ${score}/10`;
-                title.style.color = "var(--success-color)";
-                text.innerText = "עברת את המבחן בהצלחה.";
+            // ציור מכשולים (סלעים)
+            ctx.fillStyle = '#555';
+            obstacles.forEach(obs => {
+                ctx.beginPath();
+                ctx.arc(obs.x + obs.width/2, obs.y + obs.height/2, obs.width/2, 0, Math.PI*2);
+                ctx.fill();
+            });
+
+            // ציור שחקנים
+            players.forEach(p => {
+                ctx.save();
+                // יצירת צורה עגולה לתמונה (Clipping mask)
+                ctx.beginPath();
+                ctx.arc(p.x + p.width/2, p.y + p.height/2, p.width/2, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.clip();
+
+                // ציור התמונה
+                try {
+                    ctx.drawImage(p.img, p.x, p.y, p.width, p.height);
+                } catch (e) {
+                    // גיבוי אם אין תמונה - צבע רגיל
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.width, p.height);
+                }
+                ctx.restore();
                 
-                // ההודעה המבוקשת
-                secretMessage.innerHTML = `
-                    <div class="riddle-text">
-                        כל הכבוד ! כמה אפשרויות יש לערבוב חפיסת קלפים?
-                        וכמה זה בלי סימן קריאה עכשיו תחלקו ב18
-                        וכמה זה 3 סימן קריאה?
-                        זה הפעמים שתקפצו במקום
-                    </div>
-                `;
-            } else {
-                title.innerText = `נכשלת. ציון: ${score}/10`;
-                title.style.color = "var(--fail-color)";
-                text.innerText = "צריך לפחות 8 כדי לקבל את המסר הסודי. נסה שוב!";
-                secretMessage.innerHTML = "";
-            }
+                // מסגרת עגולה
+                ctx.beginPath();
+                ctx.arc(p.x + p.width/2, p.y + p.height/2, p.width/2, 0, Math.PI * 2, true);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#fff';
+                ctx.stroke();
+            });
         }
 
-        function closeModal() {
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-            if (document.getElementById('score-title').style.color === "var(--success-color)") {
-                // אופציונלי: איפוס הדף אחרי הצלחה
-                 location.reload();
-            }
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
         }
 
-        // אתחול
-        renderQuestions();
+        // --- סיום המשחק ---
+        function endGame() {
+            gameActive = false;
+            statusDiv.innerText = "";
+            obstacles = []; // נקה מכשולים
+            winScreen.style.display = 'block'; // הצג לבבות
+        }
+
+        function animateKiss() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const speed = 2;
+
+            // הזזת שחקן 1 למרכז
+            if (players[0].x < centerX - players[0].width) players[0].x += speed;
+            if (players[0].y > centerY) players[0].y -= speed;
+            else if (players[0].y < centerY) players[0].y += speed;
+
+            // הזזת שחקן 2 למרכז
+            if (players[1].x > centerX) players[1].x -= speed;
+            if (players[1].y > centerY) players[1].y -= speed;
+            else if (players[1].y < centerY) players[1].y += speed;
+        }
+
+        // התחלת המשחק
+        player1Img.onload = () => {}; 
+        loop();
 
     </script>
 </body>
