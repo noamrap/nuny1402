@@ -2,194 +2,145 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Together to the Top - Survival Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Together - Mobile Fixed</title>
     <style>
-        body {
+        /* תיקון קריטי למובייל - מונע גלילה וקפיצות */
+        body, html {
             margin: 0;
-            overflow: hidden;
-            background-color: #2c3e50;
-            font-family: 'Segoe UI', sans-serif;
-            touch-action: none;
-            user-select: none;
-        }
-
-        /* ממשק משתמש */
-        #ui {
-            position: absolute;
-            top: 0;
-            left: 0;
+            padding: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            z-index: 5;
+            overflow: hidden; /* מונע גלילה */
+            background-color: #2c3e50;
+            font-family: 'Segoe UI', sans-serif;
+            touch-action: none; /* מונע זום וגלילה בדפדפן */
+            position: fixed; /* נועל את המסך באייפון */
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ממשק */
+        #ui {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; /* מאפשר לגעת דרך ה-UI */
+            z-index: 10;
         }
 
         .hud-top {
-            padding: 15px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
             font-weight: bold;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
         }
 
-        /* בר בריאות */
+        /* בר חיים */
         .health-container {
-            width: 200px;
-            height: 20px;
-            background: rgba(0,0,0,0.5);
-            border: 2px solid white;
+            width: 120px;
+            height: 15px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid white;
             border-radius: 10px;
             overflow: hidden;
             position: relative;
         }
-
         .health-bar {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff4b1f, #ff9068);
+            width: 100%; height: 100%;
+            background: #ff4b1f;
             transition: width 0.2s;
         }
 
-        .health-text {
+        /* קו הפרדה למובייל */
+        .divider {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            color: white;
-            width: 100%;
-            text-align: center;
+            top: 0; left: 50%;
+            width: 2px; height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: translateX(-50%);
         }
 
-        /* בר התקדמות */
-        .progress-wrapper {
-            position: absolute;
-            bottom: 20px;
-            left: 10%;
-            width: 80%;
-        }
-        
-        .progress-bg {
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #00b09b;
-            border-radius: 4px;
-            transition: width 0.1s;
-        }
-
-        /* מסכים (פתיחה/סיום/הפסד) */
+        /* מסכים */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
-            z-index: 10;
-            pointer-events: auto;
-            backdrop-filter: blur(8px);
+            z-index: 20;
+            pointer-events: auto; /* כאן כן צריך מגע לכפתורים */
             text-align: center;
         }
-        
-        button {
-            background: linear-gradient(45deg, #11998e, #38ef7d);
-            border: none;
-            padding: 15px 50px;
-            color: white;
-            font-size: 22px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            margin-top: 25px;
-            font-weight: bold;
-            font-family: inherit;
-        }
 
-        .lose-btn {
-            background: linear-gradient(45deg, #cb2d3e, #ef473a);
+        button {
+            background: #00b894;
+            border: none;
+            padding: 20px 60px;
+            color: white;
+            font-size: 24px;
+            border-radius: 50px;
+            margin-top: 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        
-        button:active { transform: scale(0.95); }
+        button:active { transform: scale(0.95); opacity: 0.8; }
         .hidden { display: none !important; }
 
-        /* אזורי מגע */
-        .touch-zone {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 50%;
+        .tutorial {
+            margin-top: 20px;
+            display: flex;
+            width: 100%;
+            opacity: 0.8;
         }
-        #leftZone { left: 0; }
-        #rightZone { right: 0; }
-
-        .danger-text {
-            color: #ff4b4b;
-            font-size: 18px;
-            margin-top: 10px;
-            animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse { 0% {opacity: 1;} 50% {opacity: 0.5;} 100% {opacity: 1;} }
-
+        .tut-side { width: 50%; padding: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
-
-    <canvas id="gameCanvas"></canvas>
 
     <div id="ui">
         <div class="hud-top">
             <div class="health-container">
                 <div class="health-bar" id="healthBar"></div>
-                <div class="health-text">אנרגיה זוגית</div>
             </div>
-            <div style="font-size: 20px;">🛡️ <span id="shieldCount">0</span></div>
-            <div style="font-size: 20px;">❤️ <span id="score">0</span></div>
+            <div>🛡️ <span id="shieldCount">0</span></div>
+            <div>❤️ <span id="score">0</span></div>
         </div>
-
-        <div class="progress-wrapper">
-            <div style="text-align: center; color: rgba(255,255,255,0.7); font-size: 12px; margin-bottom: 5px;">המרחק לפסגה</div>
-            <div class="progress-bg">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-        </div>
-
-        <div id="leftZone" class="touch-zone"></div>
-        <div id="rightZone" class="touch-zone"></div>
+        <div class="divider"></div>
+        <div style="position: absolute; bottom: 0; left: 0; height: 5px; background: #00cec9; width: 0%; transition: width 0.5s;" id="progressBar"></div>
     </div>
+
+    <canvas id="gameCanvas"></canvas>
 
     <div id="startScreen" class="overlay">
         <h1>הטיפוס לפסגה</h1>
-        <p>שרדו את הסלעים, אספו לבבות והגיעו למעלה ביחד!</p>
-        <p class="danger-text">⚠️ זהירות: נפילה למטה או סיום האנרגיה = פסילה!</p>
-        <button onclick="startGame()">התחל מסע</button>
+        <p>מצב מובייל מתוקן</p>
+        <div class="tutorial">
+            <div class="tut-side" style="border-left: 1px solid white;">👈 גע כאן<br>לשליטה בשמאלי</div>
+            <div class="tut-side">גע כאן 👉<br>לשליטה בימני</div>
+        </div>
+        <button onclick="startGame()">שחקו!</button>
     </div>
 
     <div id="loseScreen" class="overlay hidden">
-        <h1 style="color: #ff6b6b; font-size: 50px;">נפסלתם! 💔</h1>
-        <p id="deathReason" style="font-size: 20px; margin-top: 10px;">נגמרה האנרגיה...</p>
-        <p>נסו לשמור אחד על השני!</p>
-        <button class="lose-btn" onclick="startGame()">נסו שוב</button>
+        <h1 style="color: #ff7675;">נפסלתם!</h1>
+        <p id="deathReason">...</p>
+        <button style="background: #d63031;" onclick="startGame()">נסו שוב</button>
     </div>
 
     <div id="winScreen" class="overlay hidden">
-        <h1 style="color: #4cd137; font-size: 50px;">ניצחון! 💍</h1>
-        <p>הוכחתם שאהבה מנצחת הכל!</p>
-        <p id="finalScore" style="font-size: 24px; font-weight: bold;"></p>
+        <h1 style="color: #ffeaa7; font-size: 40px;">הצלחתם! ❤️</h1>
+        <p id="finalScore"></p>
         <button onclick="startGame()">סיבוב נוסף</button>
     </div>
 
@@ -201,84 +152,147 @@
         const imgP1 = new Image(); imgP1.src = "Screenshot_14.png"; 
         const imgP2 = new Image(); imgP2.src = "Screenshot_15.png";
 
-        // משתנים גלובליים
         let width, height;
-        let animationId;
-        let gameRunning = false;
+        let gameActive = false;
         let frames = 0;
-        
-        // הגדרות קושי ומשחקיות
-        const GOAL_DISTANCE = 3000;
-        let distanceTraveled = 0;
+        let animationFrameId;
+
+        // הגדרות משחק
+        const GOAL = 3000;
+        let progress = 0;
         let score = 0;
         let health = 100;
-        let difficulty = 1.0;
-        
-        // ניהול אובייקטים
+        let difficulty = 1;
+
+        // קלט (Input)
+        // במקום לשמור מיקום אצבע בודד, נחשב כל פריים איפה האצבעות
+        let touchP1 = null; // מיקום X של אצבע צד שמאל
+        let touchP2 = null; // מיקום X של אצבע צד ימין
+        let keys = {}; // למחשב
+
+        // ישויות
         let p1, p2;
         let entities = [];
         let particles = [];
-        let keys = {};
-        let touchTarget = { left: null, right: null };
+
+        // --- התאמת מסך ---
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- מערכת מגע (הלב של התיקון) ---
+        // אנו מוסיפים את האירועים לקנבס עצמו עם passive: false כדי למנוע גלילה
+        canvas.addEventListener('touchstart', handleTouch, { passive: false });
+        canvas.addEventListener('touchmove', handleTouch, { passive: false });
+        canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        // תמיכה גם בעכבר למחשב
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        function handleTouch(e) {
+            if(!gameActive) return;
+            e.preventDefault(); // מבטל גלילה/זום - קריטי!
+            
+            // איפוס זמני
+            touchP1 = null;
+            touchP2 = null;
+
+            // עבור על כל האצבעות שמונחות כרגע על המסך
+            for (let i = 0; i < e.touches.length; i++) {
+                const t = e.touches[i];
+                const x = t.clientX;
+                
+                // בדיקה פשוטה: צד ימין או שמאל?
+                if (x < width / 2) {
+                    touchP1 = x; // עדכון מיקום יעד לשחקן שמאל
+                } else {
+                    touchP2 = x; // עדכון מיקום יעד לשחקן ימין
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            // קריאה חוזרת ל-handleTouch כדי לעדכן מי נשאר על המסך
+            handleTouch(e);
+        }
 
         // --- מחלקות ---
-
         class Player {
-            constructor(x, y, color, img, controls) {
-                this.x = x;
-                this.y = y;
-                this.radius = 30;
-                this.color = color;
-                this.img = img;
-                this.controls = controls;
+            constructor(side) {
+                this.side = side; // 'left' or 'right'
+                this.radius = width < 500 ? 25 : 35; // קצת יותר קטן במובייל
+                this.x = side === 'left' ? width * 0.25 : width * 0.75;
+                this.y = height - 150;
                 this.vx = 0;
-                this.vy = 0;
                 this.hasShield = false;
+                this.img = side === 'left' ? imgP1 : imgP2;
+                this.color = side === 'left' ? '#0984e3' : '#d63031';
             }
 
             update() {
-                // תנועה
-                if (keys[this.controls.right]) this.vx += 1.2;
-                if (keys[this.controls.left]) this.vx -= 1.2;
+                // חישוב יעד תנועה
+                let targetX = null;
+                
+                // בדיקת מגע
+                if (this.side === 'left' && touchP1 !== null) targetX = touchP1;
+                if (this.side === 'right' && touchP2 !== null) targetX = touchP2;
 
-                // מגע
-                let target = (this.controls.left === 'KeyA') ? touchTarget.left : touchTarget.right;
-                if (target !== null) {
-                    this.vx += (target - this.x) * 0.08;
+                // בדיקת מקלדת (גיבוי למחשב)
+                if (this.side === 'left') {
+                    if (keys['KeyA']) this.vx -= 1;
+                    if (keys['KeyD']) this.vx += 1;
+                } else {
+                    if (keys['ArrowLeft']) this.vx -= 1;
+                    if (keys['ArrowRight']) this.vx += 1;
+                }
+
+                // תנועה חלקה לעבר האצבע
+                if (targetX !== null) {
+                    const diff = targetX - this.x;
+                    this.vx += diff * 0.1; // כוח משיכה לאצבע
                 }
 
                 // פיזיקה
-                this.vx *= 0.9; // חיכוך
+                this.vx *= 0.85; // חיכוך חזק לשליטה מדויקת
                 this.x += this.vx;
 
-                // גבולות קירות
-                if (this.x < this.radius) { this.x = this.radius; this.vx *= -0.5; }
-                if (this.x > width - this.radius) { this.x = width - this.radius; this.vx *= -0.5; }
+                // גבולות
+                if (this.x < this.radius) { this.x = this.radius; this.vx = 0; }
+                if (this.x > width - this.radius) { this.x = width - this.radius; this.vx = 0; }
 
-                // גבולות אנכיים (המסך זז למעלה, אז השחקן נדחף למטה אלא אם הוא זז)
-                // "כבידת משחק" - השחקן נמשך לאט למטה
-                if (this.y < height - 100) {
-                    this.y += 1.5;
+                // גבולות גזרה (אופציונלי - מונע התנגשות ביניהם)
+                if (this.side === 'left' && this.x > width/2 - this.radius) {
+                    this.x = width/2 - this.radius; this.vx = 0;
+                }
+                if (this.side === 'right' && this.x < width/2 + this.radius) {
+                    this.x = width/2 + this.radius; this.vx = 0;
                 }
 
-                // בדיקת מוות (נפילה מהמסך)
+                // כבידה רכה (גלילה למטה)
+                if (this.y < height - 100) this.y += 2;
+                
+                // בדיקת נפילה
                 if (this.y > height + this.radius) {
-                    gameOver("אחד מכם נפל לתהום!");
+                    gameOver("נפילה לתהום!");
                 }
             }
 
             draw() {
-                // מגן
                 if (this.hasShield) {
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radius + 8, 0, Math.PI*2);
-                    ctx.strokeStyle = '#00f260';
+                    ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI*2);
+                    ctx.strokeStyle = '#00b894';
                     ctx.lineWidth = 3;
-                    ctx.setLineDash([5, 5]);
                     ctx.stroke();
-                    ctx.setLineDash([]);
                 }
-
+                
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
@@ -293,173 +307,125 @@
                 
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-                ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 2;
+                ctx.strokeStyle = '#fff';
                 ctx.stroke();
             }
         }
 
         class Entity {
             constructor() {
-                this.type = Math.random() < 0.8 ? 'rock' : (Math.random() < 0.5 ? 'heart' : 'shield');
+                this.type = Math.random() > 0.8 ? (Math.random() > 0.5 ? 'heart' : 'shield') : 'rock';
                 this.x = Math.random() * (width - 40) + 20;
-                this.y = -60;
-                this.size = (this.type === 'rock') ? 25 + Math.random() * 30 : 25;
-                // מהירות תלויה בקושי
-                this.speed = (3 + Math.random() * 4) * difficulty; 
+                this.y = -50;
+                this.size = this.type === 'rock' ? 20 + Math.random() * 25 : 25;
+                this.speed = (3 + Math.random() * 3) * difficulty;
                 this.active = true;
-                this.rotation = Math.random() * Math.PI;
             }
 
             update() {
                 this.y += this.speed;
-                this.rotation += 0.05;
                 if (this.y > height + 50) this.active = false;
             }
 
             draw() {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
                 if (this.type === 'rock') {
                     ctx.fillStyle = '#636e72';
                     ctx.beginPath();
-                    ctx.moveTo(-this.size, -this.size/2);
-                    ctx.lineTo(this.size, -this.size);
-                    ctx.lineTo(this.size/2, this.size);
-                    ctx.lineTo(-this.size/2, this.size/2);
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
                     ctx.fill();
-                    // הצללה לסלע
-                    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                    // אפקט סלע פשוט
+                    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(this.x - 5, this.y - 5, this.size/2, 0, Math.PI*2);
                     ctx.fill();
                 } else if (this.type === 'heart') {
-                    ctx.font = "30px Arial";
-                    ctx.fillText("❤️", -15, 10);
+                    ctx.fillText("❤️", this.x, this.y);
                 } else if (this.type === 'shield') {
-                    ctx.font = "30px Arial";
-                    ctx.fillText("🛡️", -15, 10);
+                    ctx.fillText("🛡️", this.x, this.y);
                 }
-                ctx.restore();
             }
         }
 
-        // --- פונקציות מערכת ---
-
+        // --- לוגיקה ---
         function init() {
-            resize();
-            p1 = new Player(width*0.25, height-150, 'red', imgP1, {left: 'KeyA', right: 'KeyD'});
-            p2 = new Player(width*0.75, height-150, 'blue', imgP2, {left: 'ArrowLeft', right: 'ArrowRight'});
+            p1 = new Player('left');
+            p2 = new Player('right');
             entities = [];
             particles = [];
-            
-            // איפוס משתנים
-            distanceTraveled = 0;
             score = 0;
+            progress = 0;
             health = 100;
-            difficulty = 1.0;
+            difficulty = 1;
             frames = 0;
-
+            
             document.getElementById('healthBar').style.width = '100%';
-            document.getElementById('healthBar').style.background = 'linear-gradient(90deg, #ff4b1f, #ff9068)';
+            document.getElementById('healthBar').style.background = '#ff4b1f';
         }
-
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-        }
-        window.addEventListener('resize', resize);
-
-        // שליטה
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
-        
-        ['touchstart', 'touchmove'].forEach(evt => {
-            document.getElementById('leftZone').addEventListener(evt, (e) => { e.preventDefault(); touchTarget.left = e.touches[0].clientX; });
-            document.getElementById('rightZone').addEventListener(evt, (e) => { e.preventDefault(); touchTarget.right = e.touches[0].clientX; });
-        });
-        ['touchend'].forEach(evt => {
-            document.getElementById('leftZone').addEventListener(evt, () => touchTarget.left = null);
-            document.getElementById('rightZone').addEventListener(evt, () => touchTarget.right = null);
-        });
-
-        // --- לולאת משחק ---
 
         function update() {
-            if (!gameRunning) return;
+            if(!gameActive) return;
             frames++;
-
-            // 1. עדכון קושי (לאט לאט)
-            distanceTraveled += 2 * difficulty; // מתקדמים מהר יותר בדרגות גבוהות
-            difficulty = 1 + (distanceTraveled / 5000); // הקושי עולה ככל שמתקדמים
-
-            // עדכון UI
+            progress += 1 * difficulty;
+            
+            // עדכון קושי
+            difficulty = 1 + (progress / 2000);
+            
+            // UI
             document.getElementById('score').innerText = score;
-            const shieldCount = (p1.hasShield?1:0) + (p2.hasShield?1:0);
-            document.getElementById('shieldCount').innerText = shieldCount;
-            document.getElementById('progressFill').style.width = Math.min(100, (distanceTraveled/GOAL_DISTANCE)*100) + '%';
+            document.getElementById('shieldCount').innerText = (p1.hasShield?1:0) + (p2.hasShield?1:0);
+            document.getElementById('progressBar').style.width = Math.min(100, (progress/GOAL)*100) + "%";
 
-            // בדיקת ניצחון
-            if (distanceTraveled >= GOAL_DISTANCE) {
+            // ניצחון
+            if (progress >= GOAL) {
                 winGame();
                 return;
             }
 
-            // 2. יצירת מכשולים (קצב עולה עם הקושי)
-            // ככל שהקושי עולה (difficulty > 1), המספר הזה יורד -> נוצרים יותר סלעים
-            let spawnRate = Math.max(15, Math.floor(50 / difficulty)); 
-            
-            if (frames % spawnRate === 0) {
+            // יצירת אויבים
+            if (frames % Math.floor(40 / difficulty) === 0) {
                 entities.push(new Entity());
             }
 
             p1.update();
             p2.update();
 
-            // עדכון חוט מקשר (משיכה)
+            // מכניקת החבל
             const dx = p1.x - p2.x;
             const dy = p1.y - p2.y;
-            if (Math.hypot(dx, dy) > width * 0.6) {
-                p1.vx -= dx * 0.01;
-                p2.vx += dx * 0.01;
+            // אם רחוקים מדי, מושכים אחד את השני
+            if (Math.hypot(dx, dy) > width * 0.7) {
+                p1.vx -= dx * 0.005;
+                p2.vx += dx * 0.005;
             }
 
-            // עדכון ישויות
+            // בדיקת התנגשויות
             entities = entities.filter(e => e.active);
             entities.forEach(e => {
                 e.update();
-                
-                // התנגשויות
                 [p1, p2].forEach(p => {
-                    let dist = Math.hypot(p.x - e.x, p.y - e.y);
-                    if (dist < p.radius + e.size/2) {
+                    const dist = Math.hypot(p.x - e.x, p.y - e.y);
+                    if (dist < p.radius + e.size) {
                         if (e.type === 'rock') {
                             if (p.hasShield) {
                                 p.hasShield = false;
-                                createExplosion(e.x, e.y, '#00f260');
                                 e.active = false;
+                                createParticles(e.x, e.y, '#00b894');
                             } else {
-                                // פגיעה!
-                                health -= 20;
-                                updateHealthBar();
-                                createExplosion(p.x, p.y, '#ff4b1f');
-                                
-                                // עונש פיזיקלי חזק יותר
-                                p.y += 120; 
-                                p.vx = (Math.random()-0.5) * 30; // איבוד שיווי משקל
-                                
+                                health -= 25;
+                                document.getElementById('healthBar').style.width = Math.max(0, health) + "%";
+                                createParticles(p.x, p.y, '#d63031');
+                                p.y += 100; // מכה למטה
                                 e.active = false;
-
-                                if (health <= 0) {
-                                    gameOver("נגמרה לכם האנרגיה!");
-                                }
+                                if (health <= 0) gameOver("נגמרה האנרגיה!");
                             }
                         } else if (e.type === 'heart') {
-                            score += 50;
-                            health = Math.min(100, health + 10); // ריפוי
-                            updateHealthBar();
+                            score += 100;
+                            health = Math.min(100, health + 15);
+                            document.getElementById('healthBar').style.width = health + "%";
                             e.active = false;
                         } else if (e.type === 'shield') {
                             p.hasShield = true;
@@ -470,89 +436,80 @@
             });
 
             // חלקיקים
-            particles.forEach((part, i) => {
-                part.x += part.vx;
-                part.y += part.vy;
-                part.life--;
-                if(part.life <= 0) particles.splice(i, 1);
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                if(p.life <= 0) particles.splice(i, 1);
             });
         }
 
-        function updateHealthBar() {
-            const bar = document.getElementById('healthBar');
-            bar.style.width = Math.max(0, health) + '%';
-            if (health < 30) bar.style.background = '#ff0000'; // צבע אדום כשרק קצת חיים
-            else bar.style.background = 'linear-gradient(90deg, #ff4b1f, #ff9068)';
-        }
-
-        function createExplosion(x, y, color) {
-            for(let i=0; i<15; i++) {
+        function createParticles(x, y, color) {
+            for(let i=0; i<10; i++) {
                 particles.push({
                     x: x, y: y,
-                    vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15,
-                    color: color, life: 20
+                    vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+                    life: 20, color: color
                 });
             }
         }
 
         function draw() {
-            // רקע דינמי (משתנה לפי גובה)
-            let ratio = Math.min(1, distanceTraveled / GOAL_DISTANCE);
-            // מ-כחול כהה ל-כתום של שקיעה בפסגה
-            let r = Math.floor(44 + (255-44)*ratio);
-            let g = Math.floor(62 + (100-62)*ratio);
-            let b = Math.floor(80 + (80-80)*ratio);
-            ctx.fillStyle = `rgb(${r},${g},${b})`;
-            ctx.fillRect(0, 0, width, height);
+            // רקע
+            const grad = ctx.createLinearGradient(0,0,0,height);
+            grad.addColorStop(0, '#74b9ff');
+            grad.addColorStop(1, '#dfe6e9');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,width,height);
 
-            // תהום למטה
-            ctx.fillStyle = 'rgba(0,0,0,0.3)';
-            ctx.fillRect(0, height - 20, width, 20);
-
-            // חוט
+            // חבל
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
-            ctx.quadraticCurveTo((p1.x+p2.x)/2, (p1.y+p2.y)/2 + 50, p2.x, p2.y);
-            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-            ctx.lineWidth = 3;
+            ctx.quadraticCurveTo(width/2, height/2 + 100, p2.x, p2.y);
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+            ctx.lineWidth = 4;
             ctx.stroke();
 
             entities.forEach(e => e.draw());
             p1.draw();
             p2.draw();
-            particles.forEach(p => { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 4, 4); });
+
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, 5, 5);
+            });
         }
 
         function loop() {
-            if (gameRunning) {
+            if(gameActive) {
                 update();
                 draw();
-                requestAnimationFrame(loop);
+                animationFrameId = requestAnimationFrame(loop);
             }
         }
 
         function startGame() {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('loseScreen').classList.add('hidden');
-            document.getElementById('winScreen').classList.add('hidden');
+            document.querySelectorAll('.overlay').forEach(el => el.classList.add('hidden'));
             init();
-            gameRunning = true;
+            gameActive = true;
             loop();
         }
 
         function gameOver(reason) {
-            gameRunning = false;
+            gameActive = false;
             document.getElementById('loseScreen').classList.remove('hidden');
             document.getElementById('deathReason').innerText = reason;
         }
 
         function winGame() {
-            gameRunning = false;
+            gameActive = false;
             document.getElementById('winScreen').classList.remove('hidden');
-            document.getElementById('finalScore').innerText = "ניקוד סופי: " + score;
+            document.getElementById('finalScore').innerText = "ניקוד: " + score;
+            // ציור נשיקה
+            ctx.clearRect(0,0,width,height);
+            ctx.font = "100px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("💋", width/2, height/2);
         }
 
-        resize();
     </script>
 </body>
 </html>
