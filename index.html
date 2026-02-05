@@ -2,44 +2,45 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>הטיפוס אל הפסגה - משחק זוגי</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>הטיפוס הזוגי - מובייל</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            background: linear-gradient(to bottom, #87CEEB, #f0f8ff); /* שמיים */
+            background-color: #333;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
+            touch-action: none; /* מונע גלילה במובייל בזמן משחק */
         }
 
         #gameCanvas {
-            background: linear-gradient(to top, #2e8b57 0%, #87CEEB 100%); /* הר */
-            border: 2px solid #333;
             display: block;
-            margin: 0 auto;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            background: linear-gradient(to top, #4ca1af, #c4e0e5); /* גרדיאנט נעים יותר */
         }
 
         #ui {
             position: absolute;
-            top: 10px;
+            top: 20px;
             width: 100%;
             pointer-events: none;
             color: white;
-            text-shadow: 2px 2px 4px #000;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 5;
         }
 
         #status {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
         }
 
-        #controls {
+        #instructions {
+            font-size: 14px;
             margin-top: 5px;
-            font-size: 16px;
+            opacity: 0.9;
         }
 
-        /* מסך ניצחון */
+        /* מסך סיום */
         #winScreen {
             display: none;
             position: absolute;
@@ -50,33 +51,46 @@
             z-index: 10;
         }
 
-        .heart {
-            color: #e25555;
-            font-size: 100px;
-            animation: heartbeat 1s infinite;
+        .heart-anim {
+            font-size: 80px;
+            animation: pulse 1s infinite;
         }
 
-        @keyframes heartbeat {
+        @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.3); }
             100% { transform: scale(1); }
+        }
+
+        /* קו הפרדה ויזואלי לשליטה במובייל */
+        #divider {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
     <div id="ui">
-        <div id="status">התחמקו מהמכשולים והגיעו לפסגה!</div>
-        <div id="controls">
-            שחקן 1 (ימין): חצים ⬅️ ➡️ | שחקן 2 (שמאל): 🅰️ / 🇩
+        <div id="status">0 מטרים</div>
+        <div id="instructions">
+            💻 מחשב: חיצים + WASD <br>
+            📱 מובייל: גע בצד ימין/שמאל כדי לגרור כל דמות
         </div>
     </div>
-
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <div id="divider"></div>
+    <canvas id="gameCanvas"></canvas>
 
     <div id="winScreen">
-        <div class="heart">❤️</div>
-        <h1 style="color: #fff; text-shadow: 2px 2px 4px #000;">הגעתם לפסגה!</h1>
+        <div class="heart-anim">💖</div>
+        <h1 style="color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">אהבה בפסגה!</h1>
+        <button onclick="location.reload()" style="padding: 10px 20px; font-size: 18px; border-radius: 10px; border: none; cursor: pointer; background: white; color: #e25555; font-weight: bold;">שחקו שוב</button>
     </div>
 
     <script>
@@ -85,179 +99,277 @@
         const winScreen = document.getElementById('winScreen');
         const statusDiv = document.getElementById('status');
 
-        // --- הגדרות תמונות (כאן מחליפים את התמונות) ---
+        // --- טעינת תמונות ---
         const player1Img = new Image();
-        // שים כאן את התמונה של הבן/בת זוג 1
-        player1Img.src = "Screenshot_14.png";
+        player1Img.src = "Screenshot_14.png"; // התמונה שלך
 
         const player2Img = new Image();
-        // שים כאן את התמונה של הבן/בת זוג 2
-        player2Img.src = "Screenshot_15.png"; 
+        player2Img.src = "Screenshot_15.png"; // התמונה שלך
 
-        // --- הגדרות משחק ---
+        // --- משתני משחק ---
+        let width, height;
         let gameActive = true;
-        let progress = 0; // התקדמות לפסגה (0 עד 1000)
-        const goal = 1000;
+        let progress = 0;
+        const goal = 2000; // מרחק קצת יותר ארוך למשחק מעניין
         let obstacles = [];
-        
-        // הגדרת השחקנים
+        let particles = []; // אפקטים של פיצוץ
+
+        // הגדרת שחקנים
         const players = [
             { 
-                x: 200, y: 500, width: 60, height: 60, 
-                color: 'blue', img: player1Img, 
-                keys: { left: 'KeyA', right: 'KeyD' },
-                isKissing: false 
+                id: 1,
+                x: 0, y: 0, radius: 30, // נגדיר מיקום ב-resize
+                color: '#FF6B6B', img: player1Img,
+                controls: { left: 'KeyA', right: 'KeyD' },
+                vx: 0, targetX: null // למובייל
             },
             { 
-                x: 600, y: 500, width: 60, height: 60, 
-                color: 'red', img: player2Img, 
-                keys: { left: 'ArrowLeft', right: 'ArrowRight' },
-                isKissing: false
+                id: 2,
+                x: 0, y: 0, radius: 30,
+                color: '#4ECDC4', img: player2Img,
+                controls: { left: 'ArrowLeft', right: 'ArrowRight' },
+                vx: 0, targetX: null
             }
         ];
 
-        // ניהול מקלדת
-        const keysPressed = {};
-        window.addEventListener('keydown', (e) => keysPressed[e.code] = true);
-        window.addEventListener('keyup', (e) => keysPressed[e.code] = false);
+        // --- אתחול וגודל מסך ---
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
 
-        // פונקציית עדכון ראשית
+            // מיקום התחלתי יחסי לגודל המסך
+            if (progress === 0) {
+                players[0].x = width * 0.25;
+                players[0].y = height - 100;
+                players[1].x = width * 0.75;
+                players[1].y = height - 100;
+            }
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- שליטה (מקלדת + מגע) ---
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        // שליטת מגע (Multi-touch)
+        canvas.addEventListener('touchstart', handleTouch, {passive: false});
+        canvas.addEventListener('touchmove', handleTouch, {passive: false});
+        canvas.addEventListener('touchend', handleTouchEnd, {passive: false});
+
+        function handleTouch(e) {
+            e.preventDefault(); // מניעת גלילת מסך
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                // אם המגע בצד שמאל -> שולט בשחקן 1, צד ימין -> שחקן 2
+                if (touch.clientX < width / 2) {
+                    players[0].targetX = touch.clientX;
+                } else {
+                    players[1].targetX = touch.clientX;
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            // כשהאצבע עוזבת, נפסיק לכוון למטרה ספציפית
+            // (אפשר להשאיר את זה null כדי לעצור תנועה, או להשאיר במיקום האחרון)
+            // כאן נשאיר במיקום האחרון לחוויה חלקה יותר
+        }
+
+        // --- לוגיקה ---
         function update() {
             if (!gameActive) {
                 if (progress >= goal) animateKiss();
                 return;
             }
 
-            // עדכון התקדמות
-            progress += 1; // מהירות הטיפוס
-            statusDiv.innerText = `מרחק לפסגה: ${Math.max(0, goal - progress)} מטרים`;
+            // עדכון התקדמות וקושי
+            progress += 2;
+            const percentage = Math.floor((progress / goal) * 100);
+            statusDiv.innerText = `התקדמות: ${percentage}%`;
 
-            // בדיקת ניצחון
-            if (progress >= goal) {
-                endGame();
-            }
+            if (progress >= goal) endGame();
 
             // תנועת שחקנים
-            players.forEach(p => {
-                if (keysPressed[p.keys.left] && p.x > 0) p.x -= 5;
-                if (keysPressed[p.keys.right] && p.x < canvas.width - p.width) p.x += 5;
+            players.forEach((p, index) => {
+                // מקלדת
+                if (keys[p.controls.left]) p.x -= 7;
+                if (keys[p.controls.right]) p.x += 7;
+
+                // מגע (Smooth movement)
+                if (p.targetX !== null) {
+                    // תזוזה חלקה לעבר האצבע
+                    p.x += (p.targetX - p.x) * 0.2;
+                }
+
+                // גבולות גזרה
+                // שחקן 1 מוגבל לצד שמאל, שחקן 2 לצד ימין (אופציונלי, כאן נתתי חופש אבל עם גבולות מסך)
+                if (p.x < p.radius) p.x = p.radius;
+                if (p.x > width - p.radius) p.x = width - p.radius;
+                
+                // כוח משיכה חזרה למטה (אם נפגעו)
+                if (p.y < height - 100) {
+                    p.y += 2;
+                } else {
+                    p.y = height - 100;
+                }
             });
 
-            // יצירת מכשולים
-            if (Math.random() < 0.05) { // סיכוי של 5% כל פרייים למכשול חדש
+            // ניהול מכשולים
+            const difficulty = 0.05 + (progress / goal) * 0.1; // נהיה קשה יותר
+            if (Math.random() < difficulty) {
+                const size = 30 + Math.random() * 40;
                 obstacles.push({
-                    x: Math.random() * (canvas.width - 50),
-                    y: -50,
-                    width: 40 + Math.random() * 40,
-                    height: 40,
-                    speed: 3 + Math.random() * 3
+                    x: Math.random() * width,
+                    y: -size,
+                    size: size,
+                    speed: 4 + Math.random() * 5 + (progress/500), // נהיה מהיר יותר
+                    rotation: Math.random() * Math.PI,
+                    rotSpeed: (Math.random() - 0.5) * 0.2
                 });
             }
 
-            // עדכון מכשולים
-            obstacles.forEach((obs, index) => {
-                obs.y += obs.speed; // המכשול נופל למטה (מדמה טיפוס למעלה)
+            // עדכון מכשולים ובדיקת התנגשות
+            obstacles.forEach((obs, i) => {
+                obs.y += obs.speed;
+                obs.rotation += obs.rotSpeed;
 
-                // בדיקת התנגשות
+                // מחיקה אם יצא מהמסך
+                if (obs.y > height + obs.size) {
+                    obstacles.splice(i, 1);
+                    return;
+                }
+
+                // התנגשות (עיגול מול עיגול)
                 players.forEach(p => {
-                    if (isColliding(p, obs)) {
-                        // פגיעה! אפשר להחליט מה קורה (איבוד נקודות או החזרה אחורה)
-                        p.y += 20; // רעידה קטנה
-                        if(p.y > canvas.height) p.y = canvas.height - p.width; // גבול תחתון
-                    } else {
-                        // החזרה הדרגתית למיקום מקורי אם לא נפגעים
-                        if(p.y > 500) p.y -= 1;
+                    const dx = p.x - obs.x;
+                    const dy = p.y - obs.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+
+                    if (dist < p.radius + obs.size/2) {
+                        // פגיעה!
+                        createParticles(p.x, p.y, p.color);
+                        p.y += 150; // עונש: עף אחורה משמעותית
+                        if (p.y > height) p.y = height; // לא לצאת מהמסך
+                        
+                        // הרחקה קלה של המכשול שלא יפגע שוב מיד
+                        obs.y += 50; 
                     }
                 });
+            });
 
-                // מחיקת מכשולים שיצאו מהמסך
-                if (obs.y > canvas.height) {
-                    obstacles.splice(index, 1);
-                }
+            // עדכון חלקיקים
+            particles.forEach((part, i) => {
+                part.x += part.vx;
+                part.y += part.vy;
+                part.life--;
+                if(part.life <= 0) particles.splice(i, 1);
             });
         }
 
-        // בדיקת התנגשות פשוטה (מלבנים)
-        function isColliding(rect1, rect2) {
-            return (rect1.x < rect2.x + rect2.width &&
-                    rect1.x + rect1.width > rect2.x &&
-                    rect1.y < rect2.y + rect2.height &&
-                    rect1.y + rect1.height > rect2.y);
+        function createParticles(x, y, color) {
+            for(let i=0; i<10; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 20,
+                    color: color
+                });
+            }
         }
 
-        // ציור המשחק
+        // --- ציור ---
         function draw() {
-            // ניקוי מסך
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, width, height);
 
-            // ציור מכשולים (סלעים)
-            ctx.fillStyle = '#555';
+            // ציור קו מחבר (חבל הצלה/אהבה)
+            ctx.beginPath();
+            ctx.moveTo(players[0].x, players[0].y);
+            ctx.quadraticCurveTo(width/2, height - 50, players[1].x, players[1].y);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([10, 10]); // קו מקווקו
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // ציור מכשולים
             obstacles.forEach(obs => {
+                ctx.save();
+                ctx.translate(obs.x, obs.y);
+                ctx.rotate(obs.rotation);
+                ctx.fillStyle = '#4a4a4a';
+                // ציור צורה קצת יותר מעניינת מסתם עיגול (כמו סלע)
                 ctx.beginPath();
-                ctx.arc(obs.x + obs.width/2, obs.y + obs.height/2, obs.width/2, 0, Math.PI*2);
+                ctx.moveTo(-obs.size/2, -obs.size/2);
+                ctx.lineTo(obs.size/2, -obs.size/2);
+                ctx.lineTo(0, obs.size/2);
                 ctx.fill();
+                ctx.restore();
             });
 
             // ציור שחקנים
             players.forEach(p => {
                 ctx.save();
-                // יצירת צורה עגולה לתמונה (Clipping mask)
                 ctx.beginPath();
-                ctx.arc(p.x + p.width/2, p.y + p.height/2, p.width/2, 0, Math.PI * 2, true);
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.closePath();
-                ctx.clip();
+                ctx.clip(); // חיתוך התמונה לעיגול
 
-                // ציור התמונה
                 try {
-                    ctx.drawImage(p.img, p.x, p.y, p.width, p.height);
+                    ctx.drawImage(p.img, p.x - p.radius, p.y - p.radius, p.radius*2, p.radius*2);
                 } catch (e) {
-                    // גיבוי אם אין תמונה - צבע רגיל
                     ctx.fillStyle = p.color;
-                    ctx.fillRect(p.x, p.y, p.width, p.height);
+                    ctx.fill();
                 }
                 ctx.restore();
-                
-                // מסגרת עגולה
+
+                // מסגרת זוהרת
                 ctx.beginPath();
-                ctx.arc(p.x + p.width/2, p.y + p.height/2, p.width/2, 0, Math.PI * 2, true);
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = '#fff';
                 ctx.stroke();
             });
+
+            // ציור חלקיקים
+            particles.forEach(part => {
+                ctx.fillStyle = part.color;
+                ctx.fillRect(part.x, part.y, 4, 4);
+            });
         }
 
+        // --- סיום ---
+        function endGame() {
+            gameActive = false;
+            statusDiv.style.display = 'none';
+            document.getElementById('divider').style.display = 'none';
+            winScreen.style.display = 'block';
+        }
+
+        function animateKiss() {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // התקרבות למרכז
+            players[0].x += (centerX - 40 - players[0].x) * 0.05;
+            players[0].y += (centerY - players[0].y) * 0.05;
+            
+            players[1].x += (centerX + 40 - players[1].x) * 0.05;
+            players[1].y += (centerY - players[1].y) * 0.05;
+        }
+
+        // לולאת משחק
         function loop() {
             update();
             draw();
             requestAnimationFrame(loop);
         }
 
-        // --- סיום המשחק ---
-        function endGame() {
-            gameActive = false;
-            statusDiv.innerText = "";
-            obstacles = []; // נקה מכשולים
-            winScreen.style.display = 'block'; // הצג לבבות
-        }
-
-        function animateKiss() {
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const speed = 2;
-
-            // הזזת שחקן 1 למרכז
-            if (players[0].x < centerX - players[0].width) players[0].x += speed;
-            if (players[0].y > centerY) players[0].y -= speed;
-            else if (players[0].y < centerY) players[0].y += speed;
-
-            // הזזת שחקן 2 למרכז
-            if (players[1].x > centerX) players[1].x -= speed;
-            if (players[1].y > centerY) players[1].y -= speed;
-            else if (players[1].y < centerY) players[1].y += speed;
-        }
-
-        // התחלת המשחק
-        player1Img.onload = () => {}; 
+        // התחלה
         loop();
 
     </script>
