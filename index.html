@@ -3,524 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת תרגול מתמטיקה - יעל רפופורט</title>
+    <title>BioLearn - ביוטכנולוגיה ותרביות תאים</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --light: #ecf0f1;
-            --success: #27ae60;
-            --error: #c0392b;
-            --border: #bdc3c7;
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --accent-color: #00ff88;
+            --accent-hover: #00cc6a;
+            --error-color: #ff4d4d;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f6fa;
-            color: var(--primary);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
         }
 
-        /* סרגל צד וניווט */
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        h1 { margin: 0; font-size: 1.5rem; }
-        
-        .nav-container {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            background: white;
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .nav-btn {
-            background: none;
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--secondary);
-            transition: 0.2s;
-            border-radius: 4px;
-        }
-
-        .nav-btn:hover { background: var(--light); }
-        .nav-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        /* אזור תוכן */
-        main {
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            width: 90%;
-            flex-grow: 1;
-        }
-
-        /* איזור הסבר לימודי */
-        .study-panel {
-            background: #f8f9fa;
-            border-right: 4px solid var(--accent);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .formula-box {
-            font-family: 'Courier New', Courier, monospace;
-            background: #e8e8e8;
-            padding: 10px;
-            margin: 10px 0;
-            font-weight: bold;
-            direction: ltr;
-            text-align: center;
-            font-size: 1.2em;
-        }
-
-        /* איזור השאלות */
-        .progress-indicator {
-            text-align: left;
-            font-size: 0.9em;
-            color: #7f8c8d;
-            margin-bottom: 10px;
-        }
-
-        .question-box {
-            font-size: 1.2em;
+            background: var(--container-bg);
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             margin-bottom: 20px;
-            font-weight: 600;
+            border-bottom: 3px solid var(--accent-color);
         }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .stats {
+            font-size: 1.2rem;
+            font-weight: bold;
         }
 
-        .option-btn {
-            padding: 15px;
-            border: 2px solid var(--border);
-            background: white;
-            font-size: 1.1em;
+        .xp-bar-container {
+            width: 200px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .xp-bar {
+            height: 10px;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .module-container {
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+            display: none; /* Hidden by default, shown via JS */
+            animation: fadeIn 0.5s;
+        }
+
+        .module-container.active {
+            display: block;
+        }
+
+        h1, h2, h3 { color: var(--accent-color); }
+        
+        .citation {
+            font-size: 0.8rem;
+            color: #888;
+            vertical-align: super;
+        }
+
+        .quiz-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
             cursor: pointer;
-            border-radius: 6px;
-            transition: 0.2s;
+            transition: all 0.2s;
+            text-align: right;
+            font-family: inherit;
         }
 
-        .option-btn:hover:not([disabled]) {
-            border-color: var(--accent);
-            background: #f0f8ff;
+        button:hover {
+            background: #444;
+            border-color: var(--accent-color);
         }
 
-        .option-btn.correct {
-            background-color: var(--success);
-            color: white;
-            border-color: var(--success);
+        button.correct {
+            background: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
         }
 
-        .option-btn.wrong {
-            background-color: var(--error);
-            color: white;
-            border-color: var(--error);
-            opacity: 0.6;
+        button.wrong {
+            background: var(--error-color);
+            border-color: var(--error-color);
         }
 
-        /* הסבר פתרון */
-        .solution-panel {
-            margin-top: 20px;
-            padding: 15px;
-            background: #eaffea;
-            border: 1px solid #b2d8b2;
-            border-radius: 6px;
-            display: none;
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 25px;
         }
-        
-        .solution-panel.visible { display: block; }
-        
+
         .next-btn {
             display: none;
+            background: var(--accent-color);
+            color: #000;
+            font-weight: bold;
             margin-top: 20px;
             width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-size: 1.1em;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        /* עזרים ויזואליים */
-        .visual-aid {
             text-align: center;
-            margin: 20px 0;
         }
-        
-        svg { max-width: 100%; height: auto; }
 
+        .next-btn:hover { background: var(--accent-hover); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>מערכת למידה - יעל רפופורט</h1>
-    <div id="total-score">ציון מצטבר: 0</div>
-</header>
-
-<div class="nav-container">
-    <button class="nav-btn active" onclick="setTopic('pythagoras')">משפט פיתגורס</button>
-    <button class="nav-btn" onclick="setTopic('trig')">טריגונומטריה (Sin/Cos/Tan)</button>
-    <button class="nav-btn" onclick="setTopic('shift')">מציאת זווית (Shift)</button>
-    <button class="nav-btn" onclick="setTopic('stats')">סטטיסטיקה</button>
-</div>
-
-<main>
-    <div id="explanation-area" class="study-panel"></div>
-
-    <div id="practice-area">
-        <div class="progress-indicator">שאלה <span id="q-current">1</span> מתוך <span id="q-total">30</span></div>
-        
-        <div class="visual-aid" id="question-visual"></div>
-        <div class="question-box" id="question-text"></div>
-        
-        <div class="options-grid" id="options-container"></div>
-
-        <div class="solution-panel" id="solution-text"></div>
-        <button class="next-btn" id="next-button" onclick="nextQuestion()">לשאלה הבאה</button>
+    <div class="header">
+        <div>
+            <h2>BioLearn: מערכת אימון</h2>
+        </div>
+        <div class="stats">
+            <div id="rankDisplay">דרגה: מתלמד</div>
+            <div>XP: <span id="xpDisplay">0</span> / <span id="xpTarget">100</span></div>
+            <div class="xp-bar-container"><div class="xp-bar" id="xpBar"></div></div>
+        </div>
     </div>
-</main>
 
-<script>
-    // --- הגדרות מערכת ---
-    const TOTAL_QUESTIONS = 30;
-    let currentTopic = 'pythagoras';
-    let currentQuestionIndex = 1;
-    let score = 0;
-    let currentQuestionData = null;
+    <div id="app">
+        </div>
 
-    // --- תוכן לימודי (הסברים) ---
-    const studyContent = {
-        pythagoras: `
-            <h3>משפט פיתגורס - סיכום</h3>
-            <p>במשולש ישר זווית, סכום שטחי הריבועים הבנויים על הניצבים שווה לשטח הריבוע הבנוי על היתר.</p>
-            <div class="formula-box">a² + b² = c²</div>
-            <p><strong>טיפ לפתרון:</strong><br>
-            1. אם מחפשים את היתר (הצלע הארוכה מול ה-90°): עושים <strong>חיבור</strong> (+) בתוך השורש.<br>
-            2. אם מחפשים ניצב (אחת הצלעות הקצרות): עושים <strong>חיסור</strong> (-) בתוך השורש (היתר פחות הניצב הידוע).</p>
-        `,
-        trig: `
-            <h3>פונקציות טריגונומטריות</h3>
-            <p>הקשר בין הזוויות לצלעות במשולש ישר זווית.</p>
-            <div class="formula-box">
-                Sin(α) = מול / יתר<br>
-                Cos(α) = ליד / יתר<br>
-                Tan(α) = מול / ליד
-            </div>
-            <p>זוכרים לפי: <strong>SOH CAH TOA</strong>.</p>
-        `,
-        shift: `
-            <h3>מציאת זווית (Shift)</h3>
-            <p>כאשר ידועות לנו שתי צלעות ואנו רוצים למצוא את גודל הזווית, נשתמש בפעולה ההפוכה במחשבון.</p>
-            <div class="formula-box">Shift + Sin/Cos/Tan</div>
-            <p>לדוגמה: אם sin(x) = 0.5, אז x = sin⁻¹(0.5) = 30°.</p>
-        `,
-        stats: `
-            <h3>סטטיסטיקה: מדדי מרכז</h3>
-            <p><strong>ממוצע:</strong> מחברים את כל המספרים ומחלקים בכמות המספרים שיש.</p>
-            <div class="formula-box">ממוצע = סכום / כמות</div>
-            <p><strong>חציון:</strong> המספר שנמצא בדיוק באמצע, <u>אחרי שמסדרים את המספרים מהקטן לגדול</u>. אם יש מספר זוגי של איברים, עושים ממוצע בין השניים האמצעיים.</p>
-        `
-    };
+    <script>
+        // Database of lessons and quizzes based on the presentation data
+        const modules = [
+            {
+                id: 1,
+                title: "שלב 1: תרבית ראשונית והכנת תאים",
+                content: `
+                    <p>התהליך מתחיל בבחירת בעל החיים ובקביעת קטע הרקמה שיילקח ממנו[cite: 19]. נוטלים דגימה על ידי ביופסיה ומפרקים את הרקמה לתאים בעזרת טיפול מכאני וטיפול אנזימטי (למשל בעזרת טריפסין)[cite: 20].</p>
+                    <p>לאחר הפירוק, מתקבלת תערובת הטרוגנית (לא אחידה) של סוגי תאים שמקורם ברקמה המקורית[cite: 21]. מגדלים אותם באינקובטור בטמפרטורה של 37 מעלות, 95% לחות, ו-5% פחמן דו חמצני[cite: 22].</p>
+                    <h3>תרבית ראשונית</h3>
+                    <p>מקורה ישירות מגוף בעל החיים. זוהי תרבית של תאים הנצמדים למשטח הגידול (רובד חד-שכבתי / Monolayer) ובעלת אורך חיים מוגבל של עד שבועיים[cite: 39, 44, 46]. אוכלוסיית התאים היא מגוונת ולא אחידה[cite: 41].</p>
+                    <p>כאשר התאים ממלאים את הצלחת, מופעל מנגנון "עיכוב על ידי מגע", והם מפסיקים להתחלק[cite: 82, 85].</p>
+                `,
+                question: "מדוע התרבית הראשונית מוגדרת כ'הטרוגנית'?",
+                options: [
+                    "מכיוון שהיא מכילה רק סוג אחד של תאים מותמרים.",
+                    "מכיוון שהיא מורכבת מסוגים שונים של תאים שמקורם ברקמה המקורית, המתחרים ביניהם.",
+                    "מכיוון שהתאים בה מתחלקים ללא הפסקה בחיי נצח.",
+                    "מכיוון שהיא גדלה בתוך ביוריאקטור תעשייתי."
+                ],
+                correctAnswer: 1,
+                successMsg: "מדויק! הפירוק הראשוני נותן לנו 'סלט' של תאים מהרקמה המקורית, ולכן הם לא אחידים[cite: 41]. +50 XP!"
+            },
+            {
+                id: 2,
+                title: "שלב 2: קווי תאים (סופי מול רציף)",
+                content: `
+                    <p>כדי להאריך את חיי התרבית הראשונית, מבצעים פיצולים והעברות, וכך מקבלים <strong>תרבית שניונית</strong>[cite: 48, 51]. עם הזמן, מתרחש תהליך של ברירה (סלקציה) והתרבית הופכת לאחידה יותר - זהו קו תאים[cite: 53, 54].</p>
+                    <h3>קו תאים סופי (Finite Cell Line)</h3>
+                    <p>יש לו מספר חלוקות מוגבל (70-50 פעמים) בגלל התקצרות הטלומרים בקצוות הכרומוזומים בכל חלוקה[cite: 62, 63]. מגבלה זו נקראת "מגבלת הייפליק"[cite: 64]. בתאים אלו האנזים טלומראז אינו פעיל מספיק, והתא בסוף מזדקן ומת[cite: 71, 72].</p>
+                    <br>
+                    <h3>קו תאים רציף (Continuous Cell Line)</h3>
+                    <p>עבר שינוי גנטי (התמרה, מוטציה או הנדסה גנטית המפעילה את גן הטלומראז) וניצל מהזדקנות[cite: 74, 76, 77]. הוא רוכש חיי נצח, מאבד את ה"עיכוב על ידי מגע", ויכול לגדול כתרחיף וליצור צברים רב-שכבתיים[cite: 75, 82, 83, 85].</p>
+                `,
+                question: "מהו ההבדל המרכזי שמאפשר לקו תאים רציף להמשיך להתחלק לנצח בניגוד לקו תאים סופי?",
+                options: [
+                    "קו תאים רציף תמיד גדל ברובד חד שכבתי מסודר.",
+                    "בקו תאים רציף יש פעילות של האנזים טלומראז (עקב התמרה או שינוי גנטי) שמונעת את התקצרות הטלומרים.",
+                    "קו תאים רציף עובר פירוק אנזימטי בעזרת טריפסין בכל פעם מחדש.",
+                    "קו תאים רציף לא צריך אינקובטור כדי לשרוד."
+                ],
+                correctAnswer: 1,
+                successMsg: "תשובה מושלמת. הפעלת הטלומראז משמרת את הטלומרים ומונעת את 'מגבלת הייפליק'[cite: 64, 76]. +50 XP!"
+            },
+            {
+                id: 3,
+                title: "שלב 3: מחזור התא ונקודות בקרה",
+                content: `
+                    <p>התא האאוקריוטי מתחלק לארבע פאזות עיקריות[cite: 119]:</p>
+                    <ul>
+                        <li><strong>G1 (גדילה):</strong> התא גדל בנפחו ומתבצע בו חילוף חומרים[cite: 129, 130].</li>
+                        <li><strong>S (סינתזה):</strong> שלב ה-DNA. פה מתבצע שכפול ה-DNA בגרעין[cite: 131].</li>
+                        <li><strong>G2:</strong> הכנה לחלוקה[cite: 132].</li>
+                        <li><strong>M (מיטוזה):</strong> חלוקת הגרעין והתא לשני תאי בת[cite: 139].</li>
+                    </ul>
+                    <br>
+                    <p>לתא יש 3 צמתי בקרה ("רמזור אדום") כדי למנוע חלוקה של תא פגום: בסוף G1, בשלב G2 (לפני הכניסה למיטוזה), ובסוף שלב M (לפני חלוקת התא)[cite: 134, 136, 137, 139].</p>
+                `,
+                question: "באיזה שלב במחזור התא מתבצעת הכפלת החומר התורשתי (ה-DNA)?",
+                options: [
+                    "שלב G1",
+                    "שלב M",
+                    "שלב S",
+                    "שלב G2"
+                ],
+                correctAnswer: 2,
+                successMsg: "נכון מאוד! שלב S (Synthesis) הוא השלב בו נוצרים שני עותקים זהים של הכרומוזומים[cite: 131, 140]. +50 XP!"
+            },
+            {
+                id: 4,
+                title: "שלב 4: גידול מסחרי - מנתי מול רציף",
+                content: `
+                    <p>כדי לגדל תאים בכמויות מסחריות (למשל לשם הפקת חלבונים) משתמשים בביוריאקטורים. ישנן שתי גישות עיקריות:</p>
+                    <h3>גידול מנתי (Batch)</h3>
+                    <p>מערכת סגורה. מזינים חומרי גלם פעם אחת. התאים גדלים, ורק בסוף התהליך מוציאים את התוצר[cite: 173, 178, 182, 183]. החיסרון: המצע מידלדל והפסולת מצטברת. הבקרה לרוב ידנית[cite: 179].</p>
+                    <h3>גידול רציף (Continuous)</h3>
+                    <p>מערכת פתוחה וממוחשבת. מזרימים ברצף מצע טרי, ובמקביל שואבים מצע ישן עם תאים. זה שומר את התאים בשלב הגידול המעריכי (Log phase) בקצב קבוע[cite: 174, 189, 190, 191, 194].</p>
+                    <br>
+                `,
+                question: "מהו היתרון הבולט של גידול רציף על פני גידול מנתי?",
+                options: [
+                    "הוא דורש רק ערבול מגנטי פשוט ללא חיישנים.",
+                    "הוא מערכת סגורה שלא דורשת הוספת חומרים לאחר ההתחלה.",
+                    "הזרמת מצע טרי וסילוק פסולת ברצף משאירה את התאים בשלב גידול מעריכי (Log) לאורך זמן.",
+                    "הוא מתאים רק לתאים נורמליים שזקוקים למשטח כדי לגדול."
+                ],
+                correctAnswer: 2,
+                successMsg: "מעולה! בקרה ממוחשבת והחלפת מצע רציפה מונעות הצטברות פסולת ומשמרות התרבות מקסימלית[cite: 189, 191]. הגעת לסוף המודול! +50 XP!"
+            }
+        ];
 
-    // --- מחולל תרגילים (Logic Generator) ---
-    function generateQuestion(topic) {
-        // פונקציית עזר למספר רנדומלי
-        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-        
-        let q = { text: '', correct: '', options: [], explanation: '', visual: '' };
+        let currentModuleIndex = 0;
+        let xp = 0;
+        let ranks = ["מתלמד", "לבורנט משנה", "חוקר", "מדען בכיר", "אגדת ביוטק"];
 
-        if (topic === 'pythagoras') {
-            const type = Math.random() > 0.5 ? 'hypotenuse' : 'leg';
-            const a = rand(3, 12);
-            const b = rand(3, 12);
+        const appDiv = document.getElementById('app');
+        const xpDisplay = document.getElementById('xpDisplay');
+        const xpTarget = document.getElementById('xpTarget');
+        const xpBar = document.getElementById('xpBar');
+        const rankDisplay = document.getElementById('rankDisplay');
+
+        function updateStats(addedXP) {
+            xp += addedXP;
+            xpDisplay.innerText = xp;
             
-            // יצירת SVG דינמי
-            q.visual = `
-                <svg width="200" height="150" viewBox="-10 -10 220 170">
-                    <polygon points="0,150 200,150 0,0" fill="none" stroke="black" stroke-width="2"/>
-                    <rect x="0" y="140" width="10" height="10" fill="none" stroke="black"/>
-                    <text x="10" y="80" font-size="16">${type === 'leg' ? '?' : a}</text>
-                    <text x="90" y="170" font-size="16">${type === 'leg' ? b : b}</text>
-                    <text x="110" y="80" font-size="16">${type === 'hypotenuse' ? '?' : Math.floor(Math.sqrt(a*a + b*b))}</text>
-                </svg>
+            let target = (Math.floor(xp / 100) + 1) * 100;
+            xpTarget.innerText = target;
+            
+            let percentage = ((xp % 100) / 100) * 100;
+            if (xp > 0 && xp % 100 === 0) percentage = 100; 
+            xpBar.style.width = percentage + '%';
+
+            let rankIndex = Math.min(Math.floor(xp / 50), ranks.length - 1);
+            rankDisplay.innerText = "דרגה: " + ranks[rankIndex];
+        }
+
+        function renderModule(index) {
+            appDiv.innerHTML = ''; // Clear container
+            
+            if(index >= modules.length) {
+                appDiv.innerHTML = `
+                    <div class="module-container active" style="text-align: center;">
+                        <h2>כל הכבוד! סיימת את כל תכני הלימוד הבסיסיים! 🎉</h2>
+                        <p>אתה מוכן לעבור לשלב הבא: מבחן ה-50 שאלות.</p>
+                        <p>פשוט תגיד למערכת את מילת הקוד כדי להתחיל בסימולציית המבחן המלאה.</p>
+                    </div>`;
+                return;
+            }
+
+            const mod = modules[index];
+            const html = `
+                <div class="module-container active" id="mod-${mod.id}">
+                    <h2>${mod.title}</h2>
+                    <div>${mod.content}</div>
+                    
+                    <div class="quiz-section">
+                        <h3>בדיקת הבנה:</h3>
+                        <p>${mod.question}</p>
+                        <div class="options" id="options-${mod.id}">
+                            ${mod.options.map((opt, i) => 
+                                `<button onclick="checkAnswer(${index}, ${i}, this)">${opt}</button>`
+                            ).join('')}
+                        </div>
+                        <div class="feedback" id="feedback-${mod.id}"></div>
+                        <button class="next-btn" id="nextBtn-${mod.id}" onclick="nextModule()">המשך לשלב הבא</button>
+                    </div>
+                </div>
             `;
-
-            if (type === 'hypotenuse') {
-                const c_val = Math.sqrt(a*a + b*b).toFixed(2);
-                q.text = `נתונים הניצבים: ${a} ו-${b}. חשבי את אורך היתר.`;
-                q.correct = c_val;
-                q.explanation = `נוסחה: a² + b² = c².<br>חישוב: ${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}.<br>שורש של ${a*a+b*b} הוא ${c_val}.`;
-            } else {
-                // Find Leg (אנחנו נבנה משולש תקין)
-                const leg1 = rand(5, 15);
-                const hypotenuse = rand(leg1 + 2, leg1 + 10); // יתר חייב להיות גדול מניצב
-                const leg2_calc = Math.sqrt(hypotenuse**2 - leg1**2).toFixed(2);
-                
-                q.visual = `<svg width="150" height="150"><polygon points="0,100 100,100 0,0" fill="none" stroke="black" stroke-width="2"/><text x="50" y="50">c=${hypotenuse}</text><text x="50" y="120">b=${leg1}</text><text x="-20" y="50">a=?</text></svg>`; // Simplified visual update
-                q.text = `נתון יתר באורך ${hypotenuse} וניצב באורך ${leg1}. חשבי את הניצב השני.`;
-                q.correct = leg2_calc;
-                q.explanation = `נוסחה לניצב: c² - b² = a² (חיסור!).<br>חישוב: ${hypotenuse}² - ${leg1}² = ${hypotenuse**2} - ${leg1**2} = ${hypotenuse**2 - leg1**2}.<br>שורש התוצאה הוא ${leg2_calc}.`;
-            }
-        } 
-        
-        else if (topic === 'trig') {
-            const func = ['Sin', 'Cos', 'Tan'][rand(0, 2)];
-            const angle = rand(20, 70);
-            
-            q.visual = `<div style="font-size:3em;">Try: ${func}(${angle})</div>`;
-
-            if (Math.random() > 0.5) {
-                // חישוב ערך פשוט במחשבון
-                let val;
-                if(func === 'Sin') val = Math.sin(angle * Math.PI / 180);
-                if(func === 'Cos') val = Math.cos(angle * Math.PI / 180);
-                if(func === 'Tan') val = Math.tan(angle * Math.PI / 180);
-                val = val.toFixed(3);
-
-                q.text = `מהי התוצאה של ${func}(${angle}°)? (היעזרי במחשבון)`;
-                q.correct = val;
-                q.explanation = `במחשבון לוחצים: ${func} -> ${angle} -> =. התוצאה היא ${val}.`;
-            } else {
-                // מציאת צלע
-                const side = rand(10, 30);
-                let ans;
-                // Scenario: Find Opposite given Hypotenuse (Sin)
-                q.text = `במשולש ישר זווית, הזווית היא ${angle}°. היתר הוא ${side}. מה אורך הניצב שמול הזווית?`;
-                const calc = (Math.sin(angle * Math.PI / 180) * side).toFixed(2);
-                q.correct = calc;
-                q.explanation = `יש לנו זווית ויתר, מחפשים 'מול'. הנוסחה היא Sin.<br>Sin(${angle}) = X / ${side}.<br>X = ${side} * Sin(${angle}) = ${calc}.`;
-            }
+            appDiv.innerHTML = html;
         }
 
-        else if (topic === 'shift') {
-            const type = rand(1, 3); // 1=sin, 2=cos, 3=tan
-            let val, angleReal;
-            
-            // מייצרים זווית יפה
-            angleReal = rand(10, 80);
-            
-            if (type === 1) { // Sin
-                val = Math.sin(angleReal * Math.PI / 180).toFixed(3);
-                q.text = `נתון ש- Sin(x) = ${val}. מה גודל הזווית x?`;
-                q.explanation = `במחשבון: Shift -> Sin -> ${val}. מקבלים ${angleReal} מעלות.`;
-            } else if (type === 2) { // Cos
-                val = Math.cos(angleReal * Math.PI / 180).toFixed(3);
-                q.text = `נתון ש- Cos(x) = ${val}. מה גודל הזווית x?`;
-                q.explanation = `במחשבון: Shift -> Cos -> ${val}. מקבלים ${angleReal} מעלות.`;
-            } else { // Tan
-                val = Math.tan(angleReal * Math.PI / 180).toFixed(3);
-                q.text = `נתון ש- Tan(x) = ${val}. מה גודל הזווית x?`;
-                q.explanation = `במחשבון: Shift -> Tan -> ${val}. מקבלים ${angleReal} מעלות.`;
-            }
-            q.correct = angleReal + "°";
-            q.visual = `<div style="font-size:2em;">? = ${val}</div>`;
-        }
+        window.checkAnswer = function(moduleIndex, selectedOption, btnElement) {
+            const mod = modules[moduleIndex];
+            const feedback = document.getElementById(`feedback-${mod.id}`);
+            const nextBtn = document.getElementById(`nextBtn-${mod.id}`);
+            const optionsDiv = document.getElementById(`options-${mod.id}`);
+            const buttons = optionsDiv.getElementsByTagName('button');
 
-        else if (topic === 'stats') {
-            // יצירת סדרת מספרים
-            const length = rand(3, 7); // אורך סדרה 3 עד 7
-            let nums = [];
-            for(let i=0; i<length; i++) nums.push(rand(1, 20));
-            
-            const askMean = Math.random() > 0.5;
-            const sortedNums = [...nums].sort((a,b) => a-b);
-            
-            q.visual = `<div style="font-size:1.5em; letter-spacing: 3px;">${nums.join(', ')}</div>`;
-
-            if (askMean) {
-                const sum = nums.reduce((a,b) => a+b, 0);
-                const mean = (sum / length).toFixed(1); // מעגל למקום אחד
-                
-                // וודא שהתשובה היא מספר עגול או חצי כדי שיהיה קל, אם לא - תקן
-                // (כאן לצורך הפשטות נשאיר עם נקודה עשרונית, אבל נסביר)
-                
-                q.text = `חשבי את הממוצע של המספרים: ${nums.join(', ')}`;
-                q.correct = mean;
-                q.explanation = `מחברים את הכל: ${nums.join('+')} = ${sum}.<br>מחלקים בכמות האיברים (${length}).<br>${sum} / ${length} = ${mean}.`;
-            } else {
-                // Median
-                q.text = `מצאי את החציון של הסדרה: ${nums.join(', ')}`;
-                
-                let median;
-                if (length % 2 !== 0) {
-                    median = sortedNums[Math.floor(length / 2)];
-                    q.explanation = `קודם מסדרים: ${sortedNums.join(', ')}.<br>המספר האמצעי הוא ${median}.`;
-                } else {
-                    const mid1 = sortedNums[length/2 - 1];
-                    const mid2 = sortedNums[length/2];
-                    median = ((mid1 + mid2) / 2).toString(); // remove decimal if whole
-                    q.explanation = `קודם מסדרים: ${sortedNums.join(', ')}.<br>יש כמות זוגית, אז לוקחים את שני האמצעיים (${mid1}, ${mid2}) ועושים להם ממוצע: ${median}.`;
+            // Disable all buttons after click
+            for(let b of buttons) {
+                b.disabled = true;
+                if(b === btnElement && selectedOption !== mod.correctAnswer) {
+                    b.classList.add('wrong');
                 }
-                q.correct = median.toString();
             }
-        }
 
-        // יצירת מסיחים (Distractors)
-        q.options = generateOptions(q.correct);
-        return q;
-    }
-
-    // יצירת תשובות לא נכונות חכמות
-    function generateOptions(correctAnswer) {
-        let options = new Set();
-        options.add(correctAnswer.toString());
-        
-        let correctNum = parseFloat(correctAnswer);
-        
-        while (options.size < 4) {
-            let fake;
-            if (isNaN(correctNum)) { 
-                // אם התשובה היא טקסט (למשל עם מעלות), סתם ניצור מספרים קרובים
-                let cleanNum = parseFloat(correctAnswer.replace('°',''));
-                fake = (cleanNum + Math.floor(Math.random() * 20) - 10) + "°";
+            if (selectedOption === mod.correctAnswer) {
+                btnElement.classList.add('correct');
+                feedback.style.color = "var(--accent-color)";
+                feedback.innerHTML = mod.successMsg;
+                updateStats(50);
+                nextBtn.style.display = 'block';
             } else {
-                // יצירת שגיאות אופייניות
-                const offset = (Math.random() * 10 - 5).toFixed(2); // פלוס מינוס קצת
-                fake = (correctNum + parseFloat(offset)).toFixed(correctAnswer.toString().includes('.') ? 2 : 0);
-                
-                // לעיתים ניצור שגיאת כפל ב-2 או חלוקה ב-2
-                if (Math.random() > 0.8) fake = (correctNum * 2).toFixed(1);
-                if (Math.random() > 0.9) fake = (correctNum / 2).toFixed(1);
+                feedback.style.color = "var(--error-color)";
+                feedback.innerHTML = "תשובה שגויה. רענן את העמוד או נסה לשנות את הקוד כדי להמשיך ;)";
+                buttons[mod.correctAnswer].classList.add('correct'); // Show correct answer
             }
-            
-            if (fake !== correctAnswer && parseFloat(fake) > 0) {
-                options.add(fake.toString());
-            }
-        }
-        
-        // המרת Set למערך וערבוב
-        return Array.from(options).sort(() => Math.random() - 0.5);
-    }
+        };
 
-    // --- לוגיקה של ממשק המשתמש ---
+        window.nextModule = function() {
+            currentModuleIndex++;
+            renderModule(currentModuleIndex);
+        };
 
-    function setTopic(topic) {
-        currentTopic = topic;
-        currentQuestionIndex = 1;
-        
-        // עדכון כפתורי ניווט
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active'); // זה יעבוד רק בלחיצה, באתחול זה לא קריטי
-        
-        // עדכון תוכן
-        document.getElementById('explanation-area').innerHTML = studyContent[topic];
-        nextQuestion();
-    }
-
-    function nextQuestion() {
-        if (currentQuestionIndex > TOTAL_QUESTIONS) {
-            finishPractice();
-            return;
-        }
-
-        // איפוס ממשק
-        document.getElementById('solution-text').classList.remove('visible');
-        document.getElementById('next-button').style.display = 'none';
-        
-        // עדכון מונים
-        document.getElementById('q-current').textContent = currentQuestionIndex;
-        document.getElementById('q-total').textContent = TOTAL_QUESTIONS;
-
-        // יצירת שאלה חדשה
-        currentQuestionData = generateQuestion(currentTopic);
-        
-        // רנדור למסך
-        document.getElementById('question-text').innerHTML = currentQuestionData.text;
-        document.getElementById('question-visual').innerHTML = currentQuestionData.visual;
-        
-        const optsContainer = document.getElementById('options-container');
-        optsContainer.innerHTML = '';
-        
-        currentQuestionData.options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.textContent = opt;
-            btn.onclick = () => checkAnswer(opt, btn);
-            optsContainer.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selectedVal, btnElem) {
-        // מניעת לחיצה כפולה
-        const allBtns = document.querySelectorAll('.option-btn');
-        allBtns.forEach(b => b.disabled = true);
-
-        const isCorrect = selectedVal === currentQuestionData.correct;
-        
-        if (isCorrect) {
-            btnElem.classList.add('correct');
-            score += 10;
-            document.getElementById('total-score').textContent = `ציון מצטבר: ${score}`;
-        } else {
-            btnElem.classList.add('wrong');
-            // סימון התשובה הנכונה
-            allBtns.forEach(b => {
-                if (b.textContent === currentQuestionData.correct) {
-                    b.classList.add('correct');
-                }
-            });
-        }
-
-        // הצגת פתרון
-        const solDiv = document.getElementById('solution-text');
-        solDiv.innerHTML = `<strong>${isCorrect ? 'נכון מאוד!' : 'טעות, הנה הדרך:'}</strong><br>` + currentQuestionData.explanation;
-        solDiv.classList.add('visible');
-
-        // כפתור הבא
-        document.getElementById('next-button').style.display = 'block';
-        currentQuestionIndex++;
-    }
-
-    function finishPractice() {
-        const main = document.querySelector('main');
-        main.innerHTML = `
-            <div style="text-align:center;">
-                <h2>סיימת את התרגול בנושא זה! 🎉</h2>
-                <p>הציון הסופי שלך: ${score}</p>
-                <p>כדאי לעבור לנושא הבא בתפריט למעלה או לתרגל שוב.</p>
-                <button class="next-btn" style="display:inline-block; width:auto;" onclick="location.reload()">התחל מחדש</button>
-            </div>
-        `;
-    }
-
-    // אתחול ראשוני
-    window.onload = () => {
-        // סימון הכפתור הראשון כפעיל
-        document.querySelector('.nav-btn').classList.add('active');
-        document.getElementById('explanation-area').innerHTML = studyContent['pythagoras'];
-        nextQuestion();
-    };
-
-</script>
-
+        // Initialize the app
+        renderModule(currentModuleIndex);
+    </script>
 </body>
 </html>
