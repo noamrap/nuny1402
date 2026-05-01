@@ -3,348 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioLearn - ביוטכנולוגיה ותרביות תאים</title>
+    <title>מערכת למידה אישית - נועם רפופורט</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <style>
-        :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --accent-color: #00ff88;
-            --accent-hover: #00cc6a;
-            --error-color: #ff4d4d;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap');
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            font-family: 'Heebo', system-ui, -apple-system, sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--container-bg);
-            padding: 15px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            border-bottom: 3px solid var(--accent-color);
+        .code-block {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
         }
 
-        .stats {
-            font-size: 1.2rem;
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #2563eb;
+            }
+
+        code.inline-code {
+            direction: ltr;
+            display: inline-block;
+            background: #cbd5e1;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
             font-weight: bold;
         }
 
-        .xp-bar-container {
-            width: 200px;
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 5px;
-        }
-
-        .xp-bar {
-            height: 10px;
-            background: var(--accent-color);
-            width: 0%;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .module-container {
-            background: var(--container-bg);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            margin-bottom: 20px;
-            display: none; /* Hidden by default, shown via JS */
-            animation: fadeIn 0.5s;
-        }
-
-        .module-container.active {
-            display: block;
-        }
-
-        h1, h2, h3 { color: var(--accent-color); }
-        
-        .citation {
-            font-size: 0.8rem;
-            color: #888;
-            vertical-align: super;
-        }
-
-        .quiz-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-        }
-
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        button {
-            background: #333;
-            color: white;
-            border: 1px solid #555;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: right;
-            font-family: inherit;
-        }
-
-        button:hover {
-            background: #444;
-            border-color: var(--accent-color);
-        }
-
-        button.correct {
-            background: var(--accent-color);
-            color: #000;
-            border-color: var(--accent-color);
-        }
-
-        button.wrong {
-            background: var(--error-color);
-            border-color: var(--error-color);
-        }
-
-        .feedback {
-            margin-top: 15px;
+        .tab-active {
+            background: #1e293b;
+            border-right: 4px solid #3b82f6;
+            color: #60a5fa;
             font-weight: bold;
-            min-height: 25px;
         }
 
-        .next-btn {
-            display: none;
-            background: var(--accent-color);
-            color: #000;
-            font-weight: bold;
-            margin-top: 20px;
-            width: 100%;
-            text-align: center;
+        .tab-inactive {
+            color: #94a3b8;
         }
 
-        .next-btn:hover { background: var(--accent-hover); }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+            .tab-inactive:hover {
+                background: #1e293b;
+                color: #cbd5e1;
+            }
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-    <div class="header">
-        <div>
-            <h2>BioLearn: מערכת אימון</h2>
-        </div>
-        <div class="stats">
-            <div id="rankDisplay">דרגה: מתלמד</div>
-            <div>XP: <span id="xpDisplay">0</span> / <span id="xpTarget">100</span></div>
-            <div class="xp-bar-container"><div class="xp-bar" id="xpBar"></div></div>
-        </div>
-    </div>
+    <script type="text/babel">
+        const { useState } = React;
 
-    <div id="app">
-        </div>
-
-    <script>
-        // Database of lessons and quizzes based on the presentation data
-        const modules = [
+        // =========================================================
+        // DATA: מילון הטבלאות (Schema)
+        // =========================================================
+        const schemaData = [
             {
-                id: 1,
-                title: "שלב 1: תרבית ראשונית והכנת תאים",
-                content: `
-                    <p>התהליך מתחיל בבחירת בעל החיים ובקביעת קטע הרקמה שיילקח ממנו[cite: 19]. נוטלים דגימה על ידי ביופסיה ומפרקים את הרקמה לתאים בעזרת טיפול מכאני וטיפול אנזימטי (למשל בעזרת טריפסין)[cite: 20].</p>
-                    <p>לאחר הפירוק, מתקבלת תערובת הטרוגנית (לא אחידה) של סוגי תאים שמקורם ברקמה המקורית[cite: 21]. מגדלים אותם באינקובטור בטמפרטורה של 37 מעלות, 95% לחות, ו-5% פחמן דו חמצני[cite: 22].</p>
-                    <h3>תרבית ראשונית</h3>
-                    <p>מקורה ישירות מגוף בעל החיים. זוהי תרבית של תאים הנצמדים למשטח הגידול (רובד חד-שכבתי / Monolayer) ובעלת אורך חיים מוגבל של עד שבועיים[cite: 39, 44, 46]. אוכלוסיית התאים היא מגוונת ולא אחידה[cite: 41].</p>
-                    <p>כאשר התאים ממלאים את הצלחת, מופעל מנגנון "עיכוב על ידי מגע", והם מפסיקים להתחלק[cite: 82, 85].</p>
-                `,
-                question: "מדוע התרבית הראשונית מוגדרת כ'הטרוגנית'?",
-                options: [
-                    "מכיוון שהיא מכילה רק סוג אחד של תאים מותמרים.",
-                    "מכיוון שהיא מורכבת מסוגים שונים של תאים שמקורם ברקמה המקורית, המתחרים ביניהם.",
-                    "מכיוון שהתאים בה מתחלקים ללא הפסקה בחיי נצח.",
-                    "מכיוון שהיא גדלה בתוך ביוריאקטור תעשייתי."
-                ],
-                correctAnswer: 1,
-                successMsg: "מדויק! הפירוק הראשוני נותן לנו 'סלט' של תאים מהרקמה המקורית, ולכן הם לא אחידים[cite: 41]. +50 XP!"
+                name: "Candidate",
+                hebrewName: "מלש\"בים",
+                icon: "🧑‍🎓",
+                desc: "טבלת הבסיס של המערכת ששומרת את נתוני מועמדי הגיוס.",
+                logic: "הגבלתי את שנת הלידה עם CHECK (>= 2005) כדי למנוע הזנת גילאים לא הגיוניים (כמו שנת לידה 1990 למלש\"ב). תעודת הזהות היא כמובן המפתח הראשי.",
+                columns: [
+                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK", details: "תעודת זהות (9 ספרות), מפתח ראשי." },
+                    { name: "FirstName", type: "VARCHAR(50)", constraints: "NOT NULL", details: "שם פרטי." },
+                    { name: "LastName", type: "VARCHAR(50)", constraints: "NOT NULL", details: "שם משפחה." },
+                    { name: "BirthYear", type: "INT", constraints: "CHECK", details: "שנת לידה (חייב להיות 2005 ומעלה)." }
+                ]
             },
             {
-                id: 2,
-                title: "שלב 2: קווי תאים (סופי מול רציף)",
-                content: `
-                    <p>כדי להאריך את חיי התרבית הראשונית, מבצעים פיצולים והעברות, וכך מקבלים <strong>תרבית שניונית</strong>[cite: 48, 51]. עם הזמן, מתרחש תהליך של ברירה (סלקציה) והתרבית הופכת לאחידה יותר - זהו קו תאים[cite: 53, 54].</p>
-                    <h3>קו תאים סופי (Finite Cell Line)</h3>
-                    <p>יש לו מספר חלוקות מוגבל (70-50 פעמים) בגלל התקצרות הטלומרים בקצוות הכרומוזומים בכל חלוקה[cite: 62, 63]. מגבלה זו נקראת "מגבלת הייפליק"[cite: 64]. בתאים אלו האנזים טלומראז אינו פעיל מספיק, והתא בסוף מזדקן ומת[cite: 71, 72].</p>
-                    <br>
-                    <h3>קו תאים רציף (Continuous Cell Line)</h3>
-                    <p>עבר שינוי גנטי (התמרה, מוטציה או הנדסה גנטית המפעילה את גן הטלומראז) וניצל מהזדקנות[cite: 74, 76, 77]. הוא רוכש חיי נצח, מאבד את ה"עיכוב על ידי מגע", ויכול לגדול כתרחיף וליצור צברים רב-שכבתיים[cite: 75, 82, 83, 85].</p>
-                `,
-                question: "מהו ההבדל המרכזי שמאפשר לקו תאים רציף להמשיך להתחלק לנצח בניגוד לקו תאים סופי?",
-                options: [
-                    "קו תאים רציף תמיד גדל ברובד חד שכבתי מסודר.",
-                    "בקו תאים רציף יש פעילות של האנזים טלומראז (עקב התמרה או שינוי גנטי) שמונעת את התקצרות הטלומרים.",
-                    "קו תאים רציף עובר פירוק אנזימטי בעזרת טריפסין בכל פעם מחדש.",
-                    "קו תאים רציף לא צריך אינקובטור כדי לשרוד."
-                ],
-                correctAnswer: 1,
-                successMsg: "תשובה מושלמת. הפעלת הטלומראז משמרת את הטלומרים ומונעת את 'מגבלת הייפליק'[cite: 64, 76]. +50 XP!"
+                name: "CandidatePhone",
+                hebrewName: "טלפונים של מלש\"בים",
+                icon: "📱",
+                desc: "טבלה שמטפלת בתכונה רב-ערכית (אליפסה כפולה ב-ERD).",
+                logic: "במקום לדחוף כמה טלפונים לתא אחד (מה ששובר נרמול ל-1NF), פתחתי טבלה נפרדת. הוספתי פה ON DELETE CASCADE כדי שאם מלש\"ב נמחק, הטלפונים שלו יימחקו אוטומטית.",
+                columns: [
+                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז המלש\"ב. משמש גם כמפתח זר וגם כחלק מהמפתח הראשי." },
+                    { name: "PhoneNumber", type: "VARCHAR(15)", constraints: "PK", details: "מספר הטלפון. משלים את המפתח הראשי המורכב." }
+                ]
             },
             {
-                id: 3,
-                title: "שלב 3: מחזור התא ונקודות בקרה",
-                content: `
-                    <p>התא האאוקריוטי מתחלק לארבע פאזות עיקריות[cite: 119]:</p>
-                    <ul>
-                        <li><strong>G1 (גדילה):</strong> התא גדל בנפחו ומתבצע בו חילוף חומרים[cite: 129, 130].</li>
-                        <li><strong>S (סינתזה):</strong> שלב ה-DNA. פה מתבצע שכפול ה-DNA בגרעין[cite: 131].</li>
-                        <li><strong>G2:</strong> הכנה לחלוקה[cite: 132].</li>
-                        <li><strong>M (מיטוזה):</strong> חלוקת הגרעין והתא לשני תאי בת[cite: 139].</li>
-                    </ul>
-                    <br>
-                    <p>לתא יש 3 צמתי בקרה ("רמזור אדום") כדי למנוע חלוקה של תא פגום: בסוף G1, בשלב G2 (לפני הכניסה למיטוזה), ובסוף שלב M (לפני חלוקת התא)[cite: 134, 136, 137, 139].</p>
-                `,
-                question: "באיזה שלב במחזור התא מתבצעת הכפלת החומר התורשתי (ה-DNA)?",
-                options: [
-                    "שלב G1",
-                    "שלב M",
-                    "שלב S",
-                    "שלב G2"
-                ],
-                correctAnswer: 2,
-                successMsg: "נכון מאוד! שלב S (Synthesis) הוא השלב בו נוצרים שני עותקים זהים של הכרומוזומים[cite: 131, 140]. +50 XP!"
+                name: "Staff",
+                hebrewName: "סגל המיון",
+                icon: "👨‍✈️",
+                desc: "טבלת הסגל שמיישמת את יחס ההורשה (ISA) שב-ERD.",
+                logic: "במקום לפתוח 3 טבלאות (מראיין, בוחן, קצין), עשיתי Single Table Inheritance. טבלה אחת שמרכזת הכל, עם עמודת Role מוגבלת ב-CHECK. זה חוסך JOIN-ים ומייעל את המסד.",
+                columns: [
+                    { name: "StaffID", type: "VARCHAR(9)", constraints: "PK", details: "מספר אישי או ת\"ז של איש הסגל." },
+                    { name: "StaffName", type: "VARCHAR(100)", constraints: "NOT NULL", details: "שם מלא של איש הסגל." },
+                    { name: "Role", type: "VARCHAR(50)", constraints: "CHECK", details: "התפקיד. מוגבל רק ל-Interviewer, TechExaminer, או SortingOfficer." }
+                ]
             },
             {
-                id: 4,
-                title: "שלב 4: גידול מסחרי - מנתי מול רציף",
-                content: `
-                    <p>כדי לגדל תאים בכמויות מסחריות (למשל לשם הפקת חלבונים) משתמשים בביוריאקטורים. ישנן שתי גישות עיקריות:</p>
-                    <h3>גידול מנתי (Batch)</h3>
-                    <p>מערכת סגורה. מזינים חומרי גלם פעם אחת. התאים גדלים, ורק בסוף התהליך מוציאים את התוצר[cite: 173, 178, 182, 183]. החיסרון: המצע מידלדל והפסולת מצטברת. הבקרה לרוב ידנית[cite: 179].</p>
-                    <h3>גידול רציף (Continuous)</h3>
-                    <p>מערכת פתוחה וממוחשבת. מזרימים ברצף מצע טרי, ובמקביל שואבים מצע ישן עם תאים. זה שומר את התאים בשלב הגידול המעריכי (Log phase) בקצב קבוע[cite: 174, 189, 190, 191, 194].</p>
-                    <br>
-                `,
-                question: "מהו היתרון הבולט של גידול רציף על פני גידול מנתי?",
-                options: [
-                    "הוא דורש רק ערבול מגנטי פשוט ללא חיישנים.",
-                    "הוא מערכת סגורה שלא דורשת הוספת חומרים לאחר ההתחלה.",
-                    "הזרמת מצע טרי וסילוק פסולת ברצף משאירה את התאים בשלב גידול מעריכי (Log) לאורך זמן.",
-                    "הוא מתאים רק לתאים נורמליים שזקוקים למשטח כדי לגדול."
-                ],
-                correctAnswer: 2,
-                successMsg: "מעולה! בקרה ממוחשבת והחלפת מצע רציפה מונעות הצטברות פסולת ומשמרות התרבות מקסימלית[cite: 189, 191]. הגעת לסוף המודול! +50 XP!"
+                name: "Facility",
+                hebrewName: "מתקני מיון",
+                icon: "🏢",
+                desc: "רשימת בסיסי צה\"ל והמתקנים בהם נערכים מיונים.",
+                logic: "הפרדתי את המתקנים לטבלה משלהם כדי למנוע שגיאות כתיב (פעם 'בסמ\"ח' ופעם 'בסמח'). השתמשתי במספור אוטומטי (IDENTITY) כדי שהמערכת תייצר להם קוד לבד.",
+                columns: [
+                    { name: "FacilityID", type: "INT", constraints: "PK, IDENTITY", details: "קוד מתקן. מקבל מספר רץ אוטומטית (1, 2, 3...)." },
+                    { name: "Name", type: "VARCHAR(100)", constraints: "NOT NULL", details: "שם המתקן (למשל, בסמ\"ח - גב ים)." },
+                    { name: "City", type: "VARCHAR(50)", constraints: "-", details: "העיר בה המתקן נמצא." }
+                ]
+            },
+            {
+                name: "Track",
+                hebrewName: "מסלולי מיון",
+                icon: "🎯",
+                desc: "המסלולים השונים אליהם ניתן להתמיין.",
+                logic: "גם פה השתמשתי ב-IDENTITY. בנוסף, שמתי אילוץ UNIQUE על שם המסלול, כדי שאי אפשר יהיה לפתוח בטעות פעמיים מסלול בשם 'Cyber Defender'.",
+                columns: [
+                    { name: "TrackID", type: "INT", constraints: "PK, IDENTITY", details: "מזהה ייחודי למסלול." },
+                    { name: "TrackName", type: "VARCHAR(100)", constraints: "UNIQUE, NOT NULL", details: "שם המסלול. חייב להיות ייחודי לכל שורה." }
+                ]
+            },
+            {
+                name: "ScreeningEvent",
+                hebrewName: "ימי מיון",
+                icon: "📅",
+                desc: "אירוע מיון ספציפי שמתקיים בתאריך מסוים במתקן מסוים.",
+                logic: "זו טבלת ציר. היא מחברת בין המתקן (איפה המיון?) לבין איש הסגל (מי מנהל אותו?). היא שומרת גם את תאריך ושעת המיון המדויקים (DATETIME).",
+                columns: [
+                    { name: "EventID", type: "INT", constraints: "PK, IDENTITY", details: "קוד אירוע המיון (מספור אוטומטי)." },
+                    { name: "EventDate", type: "DATETIME", constraints: "NOT NULL", details: "תאריך ושעה מדויקים." },
+                    { name: "FacilityID", type: "INT", constraints: "FK", details: "קוד המתקן (מקושר לטבלת Facility)." },
+                    { name: "StaffID", type: "VARCHAR(9)", constraints: "FK", details: "המזהה של איש הסגל האחראי." }
+                ]
+            },
+            {
+                name: "Candidate_Track",
+                hebrewName: "שיבוצים וציונים (הקשר הטרינארי)",
+                icon: "🤝",
+                desc: "הלב של המערכת! טבלה שנוצרת מקשר משולש (מלש\"ב + מסלול + יום מיון).",
+                logic: "יצרתי כאן מפתח ראשי מרוכב משלוש העמודות יחד (CandidateID, TrackID, EventID) כדי לאפשר למלש\"ב להתמיין לאותו מסלול כמה פעמים בימי מיון שונים. הוספתי הגנה שציון חייב להיות בין 0 ל-100.",
+                columns: [
+                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז של המלש\"ב." },
+                    { name: "TrackID", type: "INT", constraints: "PK, FK", details: "קוד המסלול." },
+                    { name: "EventID", type: "INT", constraints: "PK, FK", details: "קוד יום המיון." },
+                    { name: "FinalScore", type: "INT", constraints: "CHECK", details: "ציון המיון. מוגבל בין 0 ל-100." },
+                    { name: "Status", type: "VARCHAR(20)", constraints: "DEFAULT", details: "סטטוס התוצאה. מוגדר כ-'Pending' כברירת מחדל." }
+                ]
+            },
+            {
+                name: "Appeal",
+                hebrewName: "ערעורים (ישות חלשה)",
+                icon: "⚖️",
+                desc: "ערעורים של מלש\"בים על תוצאות המיון או תקלות.",
+                logic: "זו ישות חלשה (מלבן כפול ב-ERD) כי ערעור לא קיים ללא מלש\"ב. המפתח הראשי מורכב מ-AppealID יחד עם CandidateID. הוספתי ON DELETE CASCADE כדי שערעור יימחק אם המלש\"ב נמחק.",
+                columns: [
+                    { name: "AppealID", type: "INT", constraints: "PK, IDENTITY", details: "קוד מזהה פנימי לערעור." },
+                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז של המלש\"ב המערער." },
+                    { name: "AppealDate", type: "DATETIME", constraints: "DEFAULT", details: "תאריך הגשת הערעור. נמשך אוטומטית מהמערכת באמצעות GETDATE()." },
+                    { name: "Reason", type: "VARCHAR(255)", constraints: "NOT NULL", details: "סיבת הערעור (הטקסט שהמלש\"ב כתב)." },
+                    { name: "IsResolved", type: "BIT", constraints: "DEFAULT", details: "האם הערעור טופל? 0 (לא, ברירת מחדל) או 1 (כן)." }
+                ]
             }
         ];
 
-        let currentModuleIndex = 0;
-        let xp = 0;
-        let ranks = ["מתלמד", "לבורנט משנה", "חוקר", "מדען בכיר", "אגדת ביוטק"];
-
-        const appDiv = document.getElementById('app');
-        const xpDisplay = document.getElementById('xpDisplay');
-        const xpTarget = document.getElementById('xpTarget');
-        const xpBar = document.getElementById('xpBar');
-        const rankDisplay = document.getElementById('rankDisplay');
-
-        function updateStats(addedXP) {
-            xp += addedXP;
-            xpDisplay.innerText = xp;
-            
-            let target = (Math.floor(xp / 100) + 1) * 100;
-            xpTarget.innerText = target;
-            
-            let percentage = ((xp % 100) / 100) * 100;
-            if (xp > 0 && xp % 100 === 0) percentage = 100; 
-            xpBar.style.width = percentage + '%';
-
-            let rankIndex = Math.min(Math.floor(xp / 50), ranks.length - 1);
-            rankDisplay.innerText = "דרגה: " + ranks[rankIndex];
-        }
-
-        function renderModule(index) {
-            appDiv.innerHTML = ''; // Clear container
-            
-            if(index >= modules.length) {
-                appDiv.innerHTML = `
-                    <div class="module-container active" style="text-align: center;">
-                        <h2>כל הכבוד! סיימת את כל תכני הלימוד הבסיסיים! 🎉</h2>
-                        <p>אתה מוכן לעבור לשלב הבא: מבחן ה-50 שאלות.</p>
-                        <p>פשוט תגיד למערכת את מילת הקוד כדי להתחיל בסימולציית המבחן המלאה.</p>
-                    </div>`;
-                return;
+        // =========================================================
+        // DATA: מנתח השאילתות הטכני (11 השאילתות מהפרויקט)
+        // =========================================================
+        const queriesData = [
+            {
+                category: "שליפת נתונים - בסיס וצירופים",
+                icon: "🔍",
+                items: [
+                    {
+                        id: "q1",
+                        title: "1. הצגת פרופיל נבחנים מלא",
+                        code: `SELECT\n  C.FirstName + ' ' + C.LastName AS FullName,\n  T.TrackName,\n  CT.FinalScore,\n  CT.Status,\n  F.City AS FacilityCity\nFROM Candidate_Track CT\nJOIN Candidate C ON CT.CandidateID = C.CandidateID\nJOIN Track T ON CT.TrackID = T.TrackID\nJOIN ScreeningEvent SE ON CT.EventID = SE.EventID\nJOIN Facility F ON SE.FacilityID = F.FacilityID\nORDER BY CT.FinalScore DESC;`,
+                        lineByLine: [
+                            { code: "C.FirstName + ' ' + C.LastName AS FullName", text: "אופרטור שרשור שמחבר מחרוזות יחד עם רווח באמצע. המילה AS מעניקה כינוי (Alias) לעמודה החדשה." },
+                            { code: "JOIN ... ON ... = ...", text: "פעולת INNER JOIN המבוצעת 4 פעמים. היא מחברת רשומות רק כאשר קיימת התאמה בין המפתח הזר למפתח הראשי בטבלת היעד. זה מאפשר לי 'לשאוב' שמות במקום מזהים מספריים." },
+                            { code: "ORDER BY CT.FinalScore DESC", text: "מסדר את התוצאות מהציון הגבוה לנמוך." }
+                        ]
+                    },
+                    {
+                        id: "q5",
+                        title: "5. איתור מלש\"בים ללא ערעור",
+                        code: `SELECT\n  C.FirstName,\n  C.LastName\nFROM Candidate C\nLEFT JOIN Appeal A ON C.CandidateID = A.CandidateID\nWHERE A.AppealID IS NULL;`,
+                        lineByLine: [
+                            { code: "LEFT JOIN", text: "צירוף שמאלי המבטיח שכל הרשומות מטבלת ה-Candidate (הטבלה השמאלית/הראשונה) יחזרו, גם אם אין להן התאמה בטבלת ה-Appeal. מלש\"ב ללא ערעור יקבל ערכי NULL בעמודות הערעור." },
+                            { code: "WHERE A.AppealID IS NULL", text: "הסינון הקריטי: לאחר הצירוף, אני מסנן ומשאיר אך ורק את השורות שבהן עמודת ה-AppealID נותרה ריקה (NULL), מה שמעיד על מלש\"ב שלא ערער מעולם." }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "סטטיסטיקות ופונקציות קיבוץ",
+                icon: "📊",
+                items: [
+                    {
+                        id: "q2",
+                        title: "2. סטטיסטיקת ציונים לפי מסלול",
+                        code: `SELECT\n  T.TrackName,\n  COUNT(CT.CandidateID) AS TotalCandidates,\n  AVG(CT.FinalScore) AS AverageScore\nFROM Candidate_Track CT\nJOIN Track T ON CT.TrackID = T.TrackID\nWHERE CT.FinalScore IS NOT NULL\nGROUP BY T.TrackName\nORDER BY AverageScore DESC;`,
+                        lineByLine: [
+                            { code: "COUNT(...) ו- AVG(...)", text: "פונקציות צבירה סקלריות המחשבות סך כולל וממוצע על קבוצת שורות." },
+                            { code: "WHERE CT.FinalScore IS NOT NULL", text: "סינון ברמת השורה הבודדת. אני זורק שורות חסרות ציון לפני שהחישוב הקבוצתי מתחיל." },
+                            { code: "GROUP BY T.TrackName", text: "הכרחי בעת שימוש משולב בשדה רגיל ופונקציות צבירה. מנחה את המנוע 'לאגד' את הרשומות לאשכולות לפי שם המסלול, ולבצע את החישוב עבור כל אשכול בנפרד." }
+                        ]
+                    },
+                    {
+                        id: "q4",
+                        title: "4. מתקנים פעילים במיוחד",
+                        code: `SELECT\n  F.Name AS FacilityName,\n  COUNT(SE.EventID) AS NumberOfEvents\nFROM Facility F\nJOIN ScreeningEvent SE ON F.FacilityID = SE.FacilityID\nWHERE YEAR(SE.EventDate) = 2026\nGROUP BY F.Name\nHAVING COUNT(SE.EventID) > 1;`,
+                        lineByLine: [
+                            { code: "YEAR(SE.EventDate) = 2026", text: "פונקציה מובנית המחלצת את השנה מתוך שדה תאריך, מסננת רק מיונים משנת 2026." },
+                            { code: "HAVING COUNT(SE.EventID) > 1", text: "הפקודה המשלימה של GROUP BY. בעוד WHERE מסנן שורות לפני הקיבוץ, HAVING מסנן את *הקבוצות עצמן* לאחר הקיבוץ. לא ניתן לבדוק תנאי על פונקציית צבירה (כמו COUNT) בתוך משפט WHERE." }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "תת-שאילתות (Sub-Queries)",
+                icon: "📥",
+                items: [
+                    {
+                        id: "q3",
+                        title: "3. מלש\"בים מצטיינים מעל הממוצע",
+                        code: `SELECT\n  C.FirstName,\n  C.LastName,\n  CT.FinalScore\nFROM Candidate_Track CT\nJOIN Candidate C ON CT.CandidateID = C.CandidateID\nWHERE CT.FinalScore > (\n  -- תת שאילתה שמחשבת את הממוצע הכללי\n  SELECT AVG(FinalScore)\n  FROM Candidate_Track\n  WHERE FinalScore IS NOT NULL\n);`,
+                        lineByLine: [
+                            { code: "WHERE CT.FinalScore > (...)", text: "השוואת שדה לערך שמוחזר מתת-שאילתה במקום לערך קבוע." },
+                            { code: "SELECT AVG(...) FROM ...", text: "התת-שאילתה (מוקפת בסוגריים). המנוע מבצע אותה ראשונה, היא מחזירה ערך סקלרי (מספר יחיד, למשל 85.5), והשאילתה החיצונית מסננת את כל המלש\"בים שציונם גבוה מהערך שהוחזר." }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "שאילתות פעולה (DML - UPDATE, INSERT, DELETE)",
+                icon: "⚡",
+                items: [
+                    {
+                        id: "q6",
+                        title: "6. עדכון שמות מתקנים (UPDATE)",
+                        code: `UPDATE Facility\nSET Name = 'Basmach - Gev Yam'\nWHERE Name = 'Basmach - Gav Yam';`,
+                        lineByLine: [
+                            { code: "UPDATE Facility", text: "הצהרה על עריכת נתונים קיימים בטבלת Facility." },
+                            { code: "SET Name =", text: "מגדיר את הערך החדש שיוכנס לעמודה." },
+                            { code: "WHERE Name =", text: "תנאי קריטי לאיתור הרשומה הספציפית הדורשת עדכון. ללא ה-WHERE, כל השורות בטבלה היו מתעדכנות לערך זה." }
+                        ]
+                    },
+                    {
+                        id: "q7",
+                        title: "7. סגירת ערעורים המונית (UPDATE + LIKE)",
+                        code: `UPDATE Appeal\nSET IsResolved = 1\nWHERE Reason LIKE '%Logistical issue%';`,
+                        lineByLine: [
+                            { code: "SET IsResolved = 1", text: "עדכון השדה הבוליאני (BIT) ל-1, המייצג אמת/טופל." },
+                            { code: "WHERE Reason LIKE", text: "שימוש באופרטור התאמת תבניות (Pattern matching) במקום שיוויון מוחלט." },
+                            { code: "'%Logistical issue%'", text: "תווי ה-Wildcard (אחוזים) מורים למנוע לאתר את המחרוזת 'Logistical issue' בכל מקום בתוך הטקסט, ללא תלות במה שכתוב לפניה או אחריה." }
+                        ]
+                    },
+                    {
+                        id: "q8",
+                        title: "8. הוספת יום מיון למתקן (INSERT)",
+                        code: `INSERT INTO ScreeningEvent (EventDate, FacilityID, StaffID)\nVALUES ('2026-03-10 08:00:00', 1, '9111111');`,
+                        lineByLine: [
+                            { code: "INSERT INTO ... (...)", text: "פקודת הזנת שורה חדשה. בסוגריים הראשונים מפורטים שמות העמודות שאליהן אני רוצה להזין נתונים." },
+                            { code: "VALUES (...)", text: "הערכים להזנה, מסודרים בדיוק לפי סדר העמודות שהוגדר למעלה. מפתחות זרים (FacilityID=1, StaffID='9111111') חייבים להיות קיימים בטבלאות האם שלהם." }
+                        ]
+                    },
+                    {
+                        id: "q9",
+                        title: "9. מחיקת מלש\"ב מהמערכת (DELETE)",
+                        code: `DELETE FROM Candidate\nWHERE CandidateID = '616161616';`,
+                        lineByLine: [
+                            { code: "DELETE FROM Candidate", text: "הצהרה על מחיקת שורות מטבלת Candidate." },
+                            { code: "WHERE CandidateID =", text: "זיהוי ייחודי של הרשומה למחיקה. עקב אילוץ ON DELETE CASCADE שהגדרתי בחלק מהטבלאות (כמו Appeal ו-CandidatePhone), גם הנתונים המקושרים לשורה זו יימחקו אוטומטית למניעת יתומים." }
+                        ]
+                    }
+                ]
+            },
+            {
+                category: "בונוס: View ו- Stored Procedure",
+                icon: "🚀",
+                items: [
+                    {
+                        id: "q10",
+                        title: "10. יצירת תצוגה וירטואלית מותאמת (VIEW)",
+                        code: `CREATE VIEW CandidateProfileView AS\nSELECT\n  C.CandidateID,\n  C.FirstName + ' ' + C.LastName AS FullName,\n  T.TrackName,\n  CT.FinalScore,\n  CT.Status\nFROM Candidate C\nLEFT JOIN Candidate_Track CT ON C.CandidateID = CT.CandidateID\nLEFT JOIN Track T ON CT.TrackID = T.TrackID;\nGO\n\nSELECT * FROM CandidateProfileView;`,
+                        lineByLine: [
+                            { code: "CREATE VIEW ... AS", text: "פקודת DDL היוצרת אובייקט במערכת (טבלה וירטואלית). היא אינה שומרת נתונים, אלא רק את משפט ה-SELECT עצמו." },
+                            { code: "LEFT JOIN", text: "שימוש בצירוף שמאלי כדי להציג את כל המלש\"בים, גם את אלו שטרם שובצו למסלול או טרם קיבלו ציון." },
+                            { code: "SELECT * FROM CandidateProfileView", text: "שליפה פשוטה מתוך ה-View, אשר 'מאחורי הקלעים' מריצה את השאילתה המורכבת ומציגה נתונים עדכניים בזמן אמת." }
+                        ]
+                    },
+                    {
+                        id: "q11",
+                        title: "11. שגרה מאוחסנת להזנת מלש\"ב (PROCEDURE)",
+                        code: `CREATE PROCEDURE AddNewCandidate\n  @ID VARCHAR(9),\n  @FName VARCHAR(50),\n  @LName VARCHAR(50),\n  @BYear INT\nAS\nBEGIN\n  INSERT INTO Candidate (CandidateID, FirstName, LastName, BirthYear)\n  VALUES (@ID, @FName, @LName, @BYear);\nEND;\nGO\n\nEXEC AddNewCandidate '999888777', 'Moshe', 'Cohen', 2007;`,
+                        lineByLine: [
+                            { code: "CREATE PROCEDURE", text: "יצירת שגרה מאוחסנת (Stored Procedure), בלוק קוד שניתן לקרוא לו שוב ושוב." },
+                            { code: "@ID, @FName...", text: "הגדרת משתנים/פרמטרים שיקבלו את הנתונים בזמן הקריאה. שימוש בפרמטרים מונע התקפות SQL Injection ומשפר את האבטחה." },
+                            { code: "AS BEGIN ... END", text: "תחימת גוף הפונקציה שבה מתבצעת הפקודה בפועל." },
+                            { code: "EXEC AddNewCandidate", text: "הפעלת השגרה (Execute) יחד עם העברת הארגומנטים המתאימים להזנה." }
+                        ]
+                    }
+                ]
             }
+        ];
 
-            const mod = modules[index];
-            const html = `
-                <div class="module-container active" id="mod-${mod.id}">
-                    <h2>${mod.title}</h2>
-                    <div>${mod.content}</div>
-                    
-                    <div class="quiz-section">
-                        <h3>בדיקת הבנה:</h3>
-                        <p>${mod.question}</p>
-                        <div class="options" id="options-${mod.id}">
-                            ${mod.options.map((opt, i) => 
-                                `<button onclick="checkAnswer(${index}, ${i}, this)">${opt}</button>`
-                            ).join('')}
+        // =========================================================
+        // DATA: מדריך סינטקס (נוסף לבקשתך!)
+        // =========================================================
+        const syntaxData = [
+            {
+                title: "SELECT & WHERE - שליפה וסינון",
+                icon: "🔎",
+                syntax: "SELECT column1, column2\nFROM TableName\nWHERE condition\nORDER BY column ASC/DESC;",
+                explanation: "פקודת הבסיס. SELECT בוחר אילו עמודות להציג, FROM אומר מאיזו טבלה, WHERE מסנן איזה שורות יעברו, ו-ORDER BY ממיין את התוצאה הסופית.",
+                exampleCode: "SELECT FirstName, LastName, BirthYear\nFROM Candidate\nWHERE BirthYear >= 2006\nORDER BY BirthYear DESC;",
+                exampleDesc: "שולף את השמות ושנת הלידה של כל המלש\"בים שנולדו מ-2006 והלאה (כולל), ומסדר אותם מהצעיר למבוגר (DESC)."
+            },
+            {
+                title: "GROUP BY & Aggregation - קיבוץ ופונקציות צבירה",
+                icon: "🧮",
+                syntax: "SELECT column1, COUNT(column2)\nFROM TableName\nGROUP BY column1;",
+                explanation: "פונקציות צבירה (COUNT, SUM, AVG, MAX, MIN) עושות חישוב על קבוצת שורות. חובה להשתמש ב-GROUP BY על כל עמודה רגילה שבחרנו ב-SELECT כדי שה-SQL ידע איך לחלק את הקבוצות.",
+                exampleCode: "SELECT StaffID, COUNT(EventID) AS TotalEvents\nFROM ScreeningEvent\nGROUP BY StaffID;",
+                exampleDesc: "סופר כמה ימי מיון (EventID) מנהל כל איש סגל. המערכת מקבצת את כל השורות של אותו StaffID וסופרת כמה שורות יש בכל קבוצה."
+            },
+            {
+                title: "HAVING - סינון קבוצות (אחרי הקיבוץ)",
+                icon: "⚖️",
+                syntax: "SELECT column1, COUNT(column2)\nFROM TableName\nGROUP BY column1\nHAVING COUNT(column2) > value;",
+                explanation: "תזכורת ברזל: WHERE מסנן שורות בודדות לפני הקיבוץ. HAVING בא תמיד אחרי GROUP BY ומסנן את הקבוצות עצמן (לפי התוצאה של פונקציית הצבירה, כי אי אפשר לשים פונקציית צבירה ב-WHERE).",
+                exampleCode: "SELECT TrackID, AVG(FinalScore) AS AvgScore\nFROM Candidate_Track\nGROUP BY TrackID\nHAVING AVG(FinalScore) > 80;",
+                exampleDesc: "מחשב ממוצע ציונים לכל מסלול (TrackID), אבל מציג בסוף רק את הקבוצות (מסלולים) שהממוצע שלהם גדול מ-80."
+            },
+            {
+                title: "JOIN - צירוף טבלאות",
+                icon: "🔗",
+                syntax: "SELECT A.col1, B.col2\nFROM TableA A\nJOIN TableB B ON A.PrimaryKey = B.ForeignKey;",
+                explanation: "מחבר שורות משתי טבלאות לפי קשר הגיוני (לרוב מפתח ראשי וזר). INNER JOIN מביא רק שורות שיש להן התאמה בשתי הטבלאות. LEFT JOIN יביא את כל השורות מהטבלה השמאלית גם אם אין התאמה (וישים NULL).",
+                exampleCode: "SELECT S.StaffName, SE.EventDate\nFROM Staff S\nJOIN ScreeningEvent SE ON S.StaffID = SE.StaffID;",
+                exampleDesc: "מציג את שם איש הסגל ואת התאריכים של ימי המיון שהוא מנהל. החיבור נעשה דרך תעודת הזהות של איש הסגל המשותפת לשתי הטבלאות."
+            },
+            {
+                title: "UPDATE - עדכון נתונים",
+                icon: "✏️",
+                syntax: "UPDATE TableName\nSET column1 = value1, column2 = value2\nWHERE condition;",
+                explanation: "מעדכן רשומות קיימות בטבלה. חוק סופר-חשוב: תמיד להשתמש ב-WHERE! בלעדיו, העדכון יחול על כל השורות בטבלה ויהרוס את הנתונים.",
+                exampleCode: "UPDATE Candidate_Track\nSET Status = 'Accepted'\nWHERE FinalScore >= 95;",
+                exampleDesc: "ניגש לטבלת השיבוצים והציונים, ומעדכן את הסטטוס ל-'Accepted' (התקבל) אך ורק עבור מלש\"בים שהציון הסופי שלהם הוא 95 ומעלה."
+            }
+        ];
+
+        // =========================================================
+        // UI COMPONENTS
+        // =========================================================
+
+        const TableCard = ({ table }) => (
+            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg">
+                <div className="p-6 border-b border-slate-700 bg-slate-800/80 flex items-center justify-between">
+                    <h3 className="text-2xl font-black text-slate-100 flex items-center gap-3">
+                        <span className="text-3xl">{table.icon}</span>
+                        {table.hebrewName} <span className="text-blue-400 font-mono text-xl">({table.name})</span>
+                    </h3>
+                </div>
+                <div className="p-6 md:p-8">
+                    <p className="text-slate-300 text-lg mb-6 leading-relaxed">{table.desc}</p>
+
+                    <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-xl mb-8 flex gap-4">
+                        <span className="text-2xl mt-1">🧠</span>
+                        <div>
+                            <span className="text-xs font-black text-blue-400 tracking-widest mb-1 block uppercase">ההיגיון שלי בתכנון (מה להגיד לבוחנת)</span>
+                            <p className="text-blue-100/90 leading-relaxed font-medium">{table.logic}</p>
                         </div>
-                        <div class="feedback" id="feedback-${mod.id}"></div>
-                        <button class="next-btn" id="nextBtn-${mod.id}" onclick="nextModule()">המשך לשלב הבא</button>
+                    </div>
+
+                    <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
+                        <table className="w-full text-right border-collapse">
+                            <thead>
+                                <tr className="bg-slate-800 text-slate-300 text-sm uppercase tracking-wider">
+                                    <th className="py-3 px-4 border-b border-slate-700">שם העמודה</th>
+                                    <th className="py-3 px-4 border-b border-slate-700">סוג נתונים</th>
+                                    <th className="py-3 px-4 border-b border-slate-700 text-center">אילוצים (Constraints)</th>
+                                    <th className="py-3 px-4 border-b border-slate-700 w-1/2">תפקיד / הסבר</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-slate-300 text-[15px]">
+                                {table.columns.map((col, idx) => (
+                                    <tr key={idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                                        <td className="py-4 px-4 font-mono text-blue-300 font-bold">{col.name}</td>
+                                        <td className="py-4 px-4 font-mono text-purple-300 text-sm">{col.type}</td>
+                                        <td className="py-4 px-4 text-center">
+                                            {col.constraints !== "-" ? (
+                                                <div className="flex flex-wrap gap-1 justify-center">
+                                                    {col.constraints.split(',').map(c =>
+                                                        <span key={c} className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider
+                                                            ${c.trim() === 'PK' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                                              c.trim() === 'FK' ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30' :
+                                                              'bg-slate-700 text-slate-300 border border-slate-600'}
+                                                        `}>
+                                                            {c.trim()}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-600">-</span>
+                                            )}
+                                        </td>
+                                        <td className="py-4 px-4 text-slate-400 leading-snug">{col.details}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            `;
-            appDiv.innerHTML = html;
-        }
+            </div>
+        );
 
-        window.checkAnswer = function(moduleIndex, selectedOption, btnElement) {
-            const mod = modules[moduleIndex];
-            const feedback = document.getElementById(`feedback-${mod.id}`);
-            const nextBtn = document.getElementById(`nextBtn-${mod.id}`);
-            const optionsDiv = document.getElementById(`options-${mod.id}`);
-            const buttons = optionsDiv.getElementsByTagName('button');
+        const QueryCard = ({ data }) => (
+            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg backdrop-blur-sm">
+                <div className="p-5 border-b border-slate-700 bg-slate-900/80">
+                    <h3 className="text-xl font-black text-slate-100 flex items-center gap-2">
+                        <span className="text-blue-500 font-mono">{data.title.split('.')[0]}.</span>
+                        {data.title.split('.')[1]}
+                    </h3>
+                </div>
+                <div className="p-6 md:p-8">
+                    <div className="mb-6 relative rounded-xl overflow-hidden shadow-xl border border-slate-600 bg-black">
+                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 font-bold tracking-widest uppercase rounded-bl-lg">SQL Syntax</div>
+                        <pre className="code-block p-6 pt-10 overflow-x-auto text-sm text-blue-300"><code>{data.code}</code></pre>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-slate-300 text-sm uppercase tracking-widest mb-4 border-b border-slate-700 pb-2">ניתוח טכני לבוחנת:</h4>
+                        <div className="space-y-3">
+                            {data.lineByLine.map((line, idx) => (
+                                <div key={idx} className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                    <div className="mb-2"><code className="inline-code">{line.code}</code></div>
+                                    <p className="text-slate-400 text-sm leading-relaxed border-r-2 border-blue-500/50 pr-2">{line.text}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
 
-            // Disable all buttons after click
-            for(let b of buttons) {
-                b.disabled = true;
-                if(b === btnElement && selectedOption !== mod.correctAnswer) {
-                    b.classList.add('wrong');
-                }
-            }
+        const SyntaxCard = ({ data }) => (
+            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg">
+                <div className="p-5 border-b border-slate-700 bg-slate-800/80">
+                    <h3 className="text-2xl font-black text-slate-100 flex items-center gap-3">
+                        <span className="text-3xl">{data.icon}</span>
+                        {data.title}
+                    </h3>
+                </div>
+                <div className="p-6 md:p-8">
+                    <p className="text-slate-300 text-lg mb-6 leading-relaxed">{data.explanation}</p>
 
-            if (selectedOption === mod.correctAnswer) {
-                btnElement.classList.add('correct');
-                feedback.style.color = "var(--accent-color)";
-                feedback.innerHTML = mod.successMsg;
-                updateStats(50);
-                nextBtn.style.display = 'block';
-            } else {
-                feedback.style.color = "var(--error-color)";
-                feedback.innerHTML = "תשובה שגויה. רענן את העמוד או נסה לשנות את הקוד כדי להמשיך ;)";
-                buttons[mod.correctAnswer].classList.add('correct'); // Show correct answer
-            }
+                    <h4 className="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2">איך כותבים את זה (הנוסחה):</h4>
+                    <div className="mb-6 rounded-xl overflow-hidden border border-slate-600 bg-black">
+                        <pre className="code-block p-4 text-sm text-amber-300 opacity-80"><code>{data.syntax}</code></pre>
+                    </div>
+
+                    <h4 className="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <span className="text-blue-400">דוגמה מהפרויקט שלך:</span>
+                    </h4>
+                    <div className="relative rounded-xl overflow-hidden border border-blue-600 bg-[#0a0f1c] mb-4">
+                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 font-bold tracking-widest uppercase rounded-bl-lg">EXAMPLE</div>
+                        <pre className="code-block p-5 pt-8 text-sm text-blue-300"><code>{data.exampleCode}</code></pre>
+                    </div>
+                    <p className="text-blue-200 text-sm bg-blue-900/30 p-3 rounded-lg border border-blue-800/50">
+                        <strong>הסבר הדוגמה:</strong> {data.exampleDesc}
+                    </p>
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [activeView, setActiveView] = useState('schema');
+
+            return (
+                <div className="min-h-screen flex flex-col md:flex-row">
+
+                    {/* Sidebar Navigation */}
+                    <div className="w-full md:w-72 bg-slate-950 border-l border-slate-800 flex flex-col sticky top-0 md:h-screen shadow-2xl z-20">
+                        <div className="p-8 border-b border-slate-800">
+                            <h1 className="text-2xl font-black mb-1 text-white">פרויקט SQL</h1>
+                            <p className="text-blue-400 font-medium text-sm">נועם רפופורט</p>
+                        </div>
+
+                        <div className="flex flex-col mt-4">
+                            <button
+                                onClick={() => setActiveView('schema')}
+                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'schema' ? 'tab-active' : 'tab-inactive'}`}
+                            >
+                                <span className="text-2xl">🗄️</span>
+                                מילון הטבלאות
+                            </button>
+                            <button
+                                onClick={() => setActiveView('queries')}
+                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'queries' ? 'tab-active' : 'tab-inactive'}`}
+                            >
+                                <span className="text-2xl">💻</span>
+                                מנתח השאילתות
+                            </button>
+                            {/* New Tab Added Here! */}
+                            <button
+                                onClick={() => setActiveView('syntax')}
+                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'syntax' ? 'tab-active' : 'tab-inactive'}`}
+                            >
+                                <span className="text-2xl">📖</span>
+                                מדריך סינטקס (חוקים)
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Content Area */}
+                    <div className="flex-1 overflow-y-auto scroll-smooth bg-[#0a0f1c] p-6 md:p-12 pb-32">
+                        <div className="max-w-5xl mx-auto">
+
+                            {activeView === 'schema' && (
+                                <div className="fade-in">
+                                    <div className="mb-10">
+                                        <h2 className="text-4xl font-black text-white mb-3">מילון הטבלאות (Data Dictionary)</h2>
+                                        <p className="text-slate-400 text-lg">מעבר על מבנה המסד, סוגי נתונים, מפתחות PK/FK, וההיגיון מאחורי כל טבלה בפרויקט IDF Selections.</p>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {schemaData.map(table => <TableCard key={table.name} table={table} />)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeView === 'queries' && (
+                                <div className="fade-in">
+                                    <div className="mb-10">
+                                        <h2 className="text-4xl font-black text-white mb-3">מנתח השאילתות (Query Analyzer)</h2>
+                                        <p className="text-slate-400 text-lg">ניתוח טכני של כל 11 השאילתות בפרויקט (שליפות, פעולות DML, והבונוסים).</p>
+                                    </div>
+                                    {queriesData.map((category, idx) => (
+                                        <div key={idx} className="mb-16">
+                                            <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-3 border-b border-slate-800 pb-3">
+                                                <span>{category.icon}</span> {category.category}
+                                            </h3>
+                                            <div className="grid lg:grid-cols-2 gap-8">
+                                                {category.items.map(item => <QueryCard key={item.id} data={item} />)}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* New Content View for Syntax Guide */}
+                            {activeView === 'syntax' && (
+                                <div className="fade-in">
+                                    <div className="mb-10">
+                                        <h2 className="text-4xl font-black text-white mb-3">מדריך סינטקס (חוקים ותבניות)</h2>
+                                        <p className="text-slate-400 text-lg">שכחת איך כותבים JOIN או HAVING? כאן תמצא את הנוסחאות המדויקות יחד עם דוגמאות חדשות מהפרויקט שלך.</p>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {syntaxData.map((syntaxItem, idx) => <SyntaxCard key={idx} data={syntaxItem} />)}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+
+                </div>
+            );
         };
 
-        window.nextModule = function() {
-            currentModuleIndex++;
-            renderModule(currentModuleIndex);
-        };
-
-        // Initialize the app
-        renderModule(currentModuleIndex);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
