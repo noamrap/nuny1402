@@ -3,597 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת למידה אישית - נועם רפופורט</title>
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    <title>מגילת האהבה שלנו - 9 חודשים</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600&family=Heebo:wght@300;400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap');
-
         body {
-            font-family: 'Heebo', system-ui, -apple-system, sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
+            background-color: #f4ece1;
+            background-image: radial-gradient(#d3c5b3 1px, transparent 0);
+            background-size: 40px 40px;
+            font-family: 'Assistant', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #3e2723;
         }
+        .megila-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fffdf8;
+            padding: 50px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            position: relative;
+        }
+        /* Create the scroll "poles" effect */
+        .megila-container::before, .megila-container::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            right: -10px;
+            height: 30px;
+            background: linear-gradient(to bottom, #bcaaa4, #8d6e63);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .megila-container::before { top: -15px; }
+        .megila-container::after { bottom: -15px; }
 
-        .code-block {
-            direction: ltr;
+        h1 {
+            font-family: 'Heebo', sans-serif;
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 40px;
+            color: #5d4037;
+        }
+        p {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        ul {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .signature {
+            font-family: 'Caveat', cursive;
+            font-size: 2.5em;
             text-align: left;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #3b82f6;
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: #2563eb;
-            }
-
-        code.inline-code {
+            margin-top: 50px;
             direction: ltr;
+            color: #5d4037;
+        }
+        .month-section {
+            margin: 60px 0;
+            text-align: center;
+        }
+        .month-title {
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.8em;
+            color: #8d6e63;
+            margin-bottom: 20px;
+            position: relative;
             display: inline-block;
-            background: #cbd5e1;
-            color: #0f172a;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
+        }
+        .month-title::after {
+            content: '';
+            display: block;
+            width: 60%;
+            height: 3px;
+            background: #8d6e63;
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+        .month-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            object-fit: cover;
+            border: 6px solid #fff;
+            transition: transform 0.3s;
+        }
+        .month-img:hover {
+            transform: scale(1.02);
+        }
+        .question-mark-container {
+            width: 250px;
+            height: 250px;
+            background: #f5f5f5;
+            border: 6px dashed #bcaaa4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .question-mark {
+            font-size: 120px;
+            color: #8d6e63;
             font-weight: bold;
+            font-family: 'Heebo', sans-serif;
         }
-
-        .tab-active {
-            background: #1e293b;
-            border-right: 4px solid #3b82f6;
-            color: #60a5fa;
-            font-weight: bold;
+        
+        /* Reveal Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s ease-out;
         }
-
-        .tab-inactive {
-            color: #94a3b8;
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
-
-            .tab-inactive:hover {
-                background: #1e293b;
-                color: #cbd5e1;
-            }
+        
+        @media(max-width: 600px) {
+            p, ul { font-size: 1.1em; }
+            h1 { font-size: 2em; }
+            .megila-container { padding: 30px 20px; }
+            .month-img { max-height: 350px; }
+            .question-mark-container { width: 180px; height: 180px; }
+            .question-mark { font-size: 80px; }
+        }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState } = React;
+<div class="megila-container">
+    <h1>לנועם שלי ❤️</h1>
+    
+    <div class="reveal">
+        <p>נועם שלי, איזה כיף להגיד שלי כמה זכיתי בך אין לך מושג.</p>
+        <p>היום אנחנו חוגגים תשעה חודשים ביחד.</p>
+        <p>כזמן שלוקח לתינוק להוולד כך אני מרגיש בדיוק שהאהבה שלנו היא תינוק שגודל לאט לאט והיום הוא יצא מהבטן אל העולם האמיתי, אני מסיים טירונות ויוצא לדרך חדשה ואת בקרוב מסכמת את התיכון בחגיגות הפרום ומתגייסת בעצמך.</p>
+    </div>
 
-        // =========================================================
-        // DATA: מילון הטבלאות (Schema)
-        // =========================================================
-        const schemaData = [
-            {
-                name: "Candidate",
-                hebrewName: "מלש\"בים",
-                icon: "🧑‍🎓",
-                desc: "טבלת הבסיס של המערכת ששומרת את נתוני מועמדי הגיוס.",
-                logic: "הגבלתי את שנת הלידה עם CHECK (>= 2005) כדי למנוע הזנת גילאים לא הגיוניים (כמו שנת לידה 1990 למלש\"ב). תעודת הזהות היא כמובן המפתח הראשי.",
-                columns: [
-                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK", details: "תעודת זהות (9 ספרות), מפתח ראשי." },
-                    { name: "FirstName", type: "VARCHAR(50)", constraints: "NOT NULL", details: "שם פרטי." },
-                    { name: "LastName", type: "VARCHAR(50)", constraints: "NOT NULL", details: "שם משפחה." },
-                    { name: "BirthYear", type: "INT", constraints: "CHECK", details: "שנת לידה (חייב להיות 2005 ומעלה)." }
-                ]
-            },
-            {
-                name: "CandidatePhone",
-                hebrewName: "טלפונים של מלש\"בים",
-                icon: "📱",
-                desc: "טבלה שמטפלת בתכונה רב-ערכית (אליפסה כפולה ב-ERD).",
-                logic: "במקום לדחוף כמה טלפונים לתא אחד (מה ששובר נרמול ל-1NF), פתחתי טבלה נפרדת. הוספתי פה ON DELETE CASCADE כדי שאם מלש\"ב נמחק, הטלפונים שלו יימחקו אוטומטית.",
-                columns: [
-                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז המלש\"ב. משמש גם כמפתח זר וגם כחלק מהמפתח הראשי." },
-                    { name: "PhoneNumber", type: "VARCHAR(15)", constraints: "PK", details: "מספר הטלפון. משלים את המפתח הראשי המורכב." }
-                ]
-            },
-            {
-                name: "Staff",
-                hebrewName: "סגל המיון",
-                icon: "👨‍✈️",
-                desc: "טבלת הסגל שמיישמת את יחס ההורשה (ISA) שב-ERD.",
-                logic: "במקום לפתוח 3 טבלאות (מראיין, בוחן, קצין), עשיתי Single Table Inheritance. טבלה אחת שמרכזת הכל, עם עמודת Role מוגבלת ב-CHECK. זה חוסך JOIN-ים ומייעל את המסד.",
-                columns: [
-                    { name: "StaffID", type: "VARCHAR(9)", constraints: "PK", details: "מספר אישי או ת\"ז של איש הסגל." },
-                    { name: "StaffName", type: "VARCHAR(100)", constraints: "NOT NULL", details: "שם מלא של איש הסגל." },
-                    { name: "Role", type: "VARCHAR(50)", constraints: "CHECK", details: "התפקיד. מוגבל רק ל-Interviewer, TechExaminer, או SortingOfficer." }
-                ]
-            },
-            {
-                name: "Facility",
-                hebrewName: "מתקני מיון",
-                icon: "🏢",
-                desc: "רשימת בסיסי צה\"ל והמתקנים בהם נערכים מיונים.",
-                logic: "הפרדתי את המתקנים לטבלה משלהם כדי למנוע שגיאות כתיב (פעם 'בסמ\"ח' ופעם 'בסמח'). השתמשתי במספור אוטומטי (IDENTITY) כדי שהמערכת תייצר להם קוד לבד.",
-                columns: [
-                    { name: "FacilityID", type: "INT", constraints: "PK, IDENTITY", details: "קוד מתקן. מקבל מספר רץ אוטומטית (1, 2, 3...)." },
-                    { name: "Name", type: "VARCHAR(100)", constraints: "NOT NULL", details: "שם המתקן (למשל, בסמ\"ח - גב ים)." },
-                    { name: "City", type: "VARCHAR(50)", constraints: "-", details: "העיר בה המתקן נמצא." }
-                ]
-            },
-            {
-                name: "Track",
-                hebrewName: "מסלולי מיון",
-                icon: "🎯",
-                desc: "המסלולים השונים אליהם ניתן להתמיין.",
-                logic: "גם פה השתמשתי ב-IDENTITY. בנוסף, שמתי אילוץ UNIQUE על שם המסלול, כדי שאי אפשר יהיה לפתוח בטעות פעמיים מסלול בשם 'Cyber Defender'.",
-                columns: [
-                    { name: "TrackID", type: "INT", constraints: "PK, IDENTITY", details: "מזהה ייחודי למסלול." },
-                    { name: "TrackName", type: "VARCHAR(100)", constraints: "UNIQUE, NOT NULL", details: "שם המסלול. חייב להיות ייחודי לכל שורה." }
-                ]
-            },
-            {
-                name: "ScreeningEvent",
-                hebrewName: "ימי מיון",
-                icon: "📅",
-                desc: "אירוע מיון ספציפי שמתקיים בתאריך מסוים במתקן מסוים.",
-                logic: "זו טבלת ציר. היא מחברת בין המתקן (איפה המיון?) לבין איש הסגל (מי מנהל אותו?). היא שומרת גם את תאריך ושעת המיון המדויקים (DATETIME).",
-                columns: [
-                    { name: "EventID", type: "INT", constraints: "PK, IDENTITY", details: "קוד אירוע המיון (מספור אוטומטי)." },
-                    { name: "EventDate", type: "DATETIME", constraints: "NOT NULL", details: "תאריך ושעה מדויקים." },
-                    { name: "FacilityID", type: "INT", constraints: "FK", details: "קוד המתקן (מקושר לטבלת Facility)." },
-                    { name: "StaffID", type: "VARCHAR(9)", constraints: "FK", details: "המזהה של איש הסגל האחראי." }
-                ]
-            },
-            {
-                name: "Candidate_Track",
-                hebrewName: "שיבוצים וציונים (הקשר הטרינארי)",
-                icon: "🤝",
-                desc: "הלב של המערכת! טבלה שנוצרת מקשר משולש (מלש\"ב + מסלול + יום מיון).",
-                logic: "יצרתי כאן מפתח ראשי מרוכב משלוש העמודות יחד (CandidateID, TrackID, EventID) כדי לאפשר למלש\"ב להתמיין לאותו מסלול כמה פעמים בימי מיון שונים. הוספתי הגנה שציון חייב להיות בין 0 ל-100.",
-                columns: [
-                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז של המלש\"ב." },
-                    { name: "TrackID", type: "INT", constraints: "PK, FK", details: "קוד המסלול." },
-                    { name: "EventID", type: "INT", constraints: "PK, FK", details: "קוד יום המיון." },
-                    { name: "FinalScore", type: "INT", constraints: "CHECK", details: "ציון המיון. מוגבל בין 0 ל-100." },
-                    { name: "Status", type: "VARCHAR(20)", constraints: "DEFAULT", details: "סטטוס התוצאה. מוגדר כ-'Pending' כברירת מחדל." }
-                ]
-            },
-            {
-                name: "Appeal",
-                hebrewName: "ערעורים (ישות חלשה)",
-                icon: "⚖️",
-                desc: "ערעורים של מלש\"בים על תוצאות המיון או תקלות.",
-                logic: "זו ישות חלשה (מלבן כפול ב-ERD) כי ערעור לא קיים ללא מלש\"ב. המפתח הראשי מורכב מ-AppealID יחד עם CandidateID. הוספתי ON DELETE CASCADE כדי שערעור יימחק אם המלש\"ב נמחק.",
-                columns: [
-                    { name: "AppealID", type: "INT", constraints: "PK, IDENTITY", details: "קוד מזהה פנימי לערעור." },
-                    { name: "CandidateID", type: "VARCHAR(9)", constraints: "PK, FK", details: "ת\"ז של המלש\"ב המערער." },
-                    { name: "AppealDate", type: "DATETIME", constraints: "DEFAULT", details: "תאריך הגשת הערעור. נמשך אוטומטית מהמערכת באמצעות GETDATE()." },
-                    { name: "Reason", type: "VARCHAR(255)", constraints: "NOT NULL", details: "סיבת הערעור (הטקסט שהמלש\"ב כתב)." },
-                    { name: "IsResolved", type: "BIT", constraints: "DEFAULT", details: "האם הערעור טופל? 0 (לא, ברירת מחדל) או 1 (כן)." }
-                ]
-            }
-        ];
+    <div class="month-section reveal">
+        <div class="month-title">חודש ראשון</div>
+        <img src="1000673516.jpg" class="month-img" alt="חודש 1">
+    </div>
 
-        // =========================================================
-        // DATA: מנתח השאילתות הטכני (11 השאילתות מהפרויקט)
-        // =========================================================
-        const queriesData = [
-            {
-                category: "שליפת נתונים - בסיס וצירופים",
-                icon: "🔍",
-                items: [
-                    {
-                        id: "q1",
-                        title: "1. הצגת פרופיל נבחנים מלא",
-                        code: `SELECT\n  C.FirstName + ' ' + C.LastName AS FullName,\n  T.TrackName,\n  CT.FinalScore,\n  CT.Status,\n  F.City AS FacilityCity\nFROM Candidate_Track CT\nJOIN Candidate C ON CT.CandidateID = C.CandidateID\nJOIN Track T ON CT.TrackID = T.TrackID\nJOIN ScreeningEvent SE ON CT.EventID = SE.EventID\nJOIN Facility F ON SE.FacilityID = F.FacilityID\nORDER BY CT.FinalScore DESC;`,
-                        lineByLine: [
-                            { code: "C.FirstName + ' ' + C.LastName AS FullName", text: "אופרטור שרשור שמחבר מחרוזות יחד עם רווח באמצע. המילה AS מעניקה כינוי (Alias) לעמודה החדשה." },
-                            { code: "JOIN ... ON ... = ...", text: "פעולת INNER JOIN המבוצעת 4 פעמים. היא מחברת רשומות רק כאשר קיימת התאמה בין המפתח הזר למפתח הראשי בטבלת היעד. זה מאפשר לי 'לשאוב' שמות במקום מזהים מספריים." },
-                            { code: "ORDER BY CT.FinalScore DESC", text: "מסדר את התוצאות מהציון הגבוה לנמוך." }
-                        ]
-                    },
-                    {
-                        id: "q5",
-                        title: "5. איתור מלש\"בים ללא ערעור",
-                        code: `SELECT\n  C.FirstName,\n  C.LastName\nFROM Candidate C\nLEFT JOIN Appeal A ON C.CandidateID = A.CandidateID\nWHERE A.AppealID IS NULL;`,
-                        lineByLine: [
-                            { code: "LEFT JOIN", text: "צירוף שמאלי המבטיח שכל הרשומות מטבלת ה-Candidate (הטבלה השמאלית/הראשונה) יחזרו, גם אם אין להן התאמה בטבלת ה-Appeal. מלש\"ב ללא ערעור יקבל ערכי NULL בעמודות הערעור." },
-                            { code: "WHERE A.AppealID IS NULL", text: "הסינון הקריטי: לאחר הצירוף, אני מסנן ומשאיר אך ורק את השורות שבהן עמודת ה-AppealID נותרה ריקה (NULL), מה שמעיד על מלש\"ב שלא ערער מעולם." }
-                        ]
-                    }
-                ]
-            },
-            {
-                category: "סטטיסטיקות ופונקציות קיבוץ",
-                icon: "📊",
-                items: [
-                    {
-                        id: "q2",
-                        title: "2. סטטיסטיקת ציונים לפי מסלול",
-                        code: `SELECT\n  T.TrackName,\n  COUNT(CT.CandidateID) AS TotalCandidates,\n  AVG(CT.FinalScore) AS AverageScore\nFROM Candidate_Track CT\nJOIN Track T ON CT.TrackID = T.TrackID\nWHERE CT.FinalScore IS NOT NULL\nGROUP BY T.TrackName\nORDER BY AverageScore DESC;`,
-                        lineByLine: [
-                            { code: "COUNT(...) ו- AVG(...)", text: "פונקציות צבירה סקלריות המחשבות סך כולל וממוצע על קבוצת שורות." },
-                            { code: "WHERE CT.FinalScore IS NOT NULL", text: "סינון ברמת השורה הבודדת. אני זורק שורות חסרות ציון לפני שהחישוב הקבוצתי מתחיל." },
-                            { code: "GROUP BY T.TrackName", text: "הכרחי בעת שימוש משולב בשדה רגיל ופונקציות צבירה. מנחה את המנוע 'לאגד' את הרשומות לאשכולות לפי שם המסלול, ולבצע את החישוב עבור כל אשכול בנפרד." }
-                        ]
-                    },
-                    {
-                        id: "q4",
-                        title: "4. מתקנים פעילים במיוחד",
-                        code: `SELECT\n  F.Name AS FacilityName,\n  COUNT(SE.EventID) AS NumberOfEvents\nFROM Facility F\nJOIN ScreeningEvent SE ON F.FacilityID = SE.FacilityID\nWHERE YEAR(SE.EventDate) = 2026\nGROUP BY F.Name\nHAVING COUNT(SE.EventID) > 1;`,
-                        lineByLine: [
-                            { code: "YEAR(SE.EventDate) = 2026", text: "פונקציה מובנית המחלצת את השנה מתוך שדה תאריך, מסננת רק מיונים משנת 2026." },
-                            { code: "HAVING COUNT(SE.EventID) > 1", text: "הפקודה המשלימה של GROUP BY. בעוד WHERE מסנן שורות לפני הקיבוץ, HAVING מסנן את *הקבוצות עצמן* לאחר הקיבוץ. לא ניתן לבדוק תנאי על פונקציית צבירה (כמו COUNT) בתוך משפט WHERE." }
-                        ]
-                    }
-                ]
-            },
-            {
-                category: "תת-שאילתות (Sub-Queries)",
-                icon: "📥",
-                items: [
-                    {
-                        id: "q3",
-                        title: "3. מלש\"בים מצטיינים מעל הממוצע",
-                        code: `SELECT\n  C.FirstName,\n  C.LastName,\n  CT.FinalScore\nFROM Candidate_Track CT\nJOIN Candidate C ON CT.CandidateID = C.CandidateID\nWHERE CT.FinalScore > (\n  -- תת שאילתה שמחשבת את הממוצע הכללי\n  SELECT AVG(FinalScore)\n  FROM Candidate_Track\n  WHERE FinalScore IS NOT NULL\n);`,
-                        lineByLine: [
-                            { code: "WHERE CT.FinalScore > (...)", text: "השוואת שדה לערך שמוחזר מתת-שאילתה במקום לערך קבוע." },
-                            { code: "SELECT AVG(...) FROM ...", text: "התת-שאילתה (מוקפת בסוגריים). המנוע מבצע אותה ראשונה, היא מחזירה ערך סקלרי (מספר יחיד, למשל 85.5), והשאילתה החיצונית מסננת את כל המלש\"בים שציונם גבוה מהערך שהוחזר." }
-                        ]
-                    }
-                ]
-            },
-            {
-                category: "שאילתות פעולה (DML - UPDATE, INSERT, DELETE)",
-                icon: "⚡",
-                items: [
-                    {
-                        id: "q6",
-                        title: "6. עדכון שמות מתקנים (UPDATE)",
-                        code: `UPDATE Facility\nSET Name = 'Basmach - Gev Yam'\nWHERE Name = 'Basmach - Gav Yam';`,
-                        lineByLine: [
-                            { code: "UPDATE Facility", text: "הצהרה על עריכת נתונים קיימים בטבלת Facility." },
-                            { code: "SET Name =", text: "מגדיר את הערך החדש שיוכנס לעמודה." },
-                            { code: "WHERE Name =", text: "תנאי קריטי לאיתור הרשומה הספציפית הדורשת עדכון. ללא ה-WHERE, כל השורות בטבלה היו מתעדכנות לערך זה." }
-                        ]
-                    },
-                    {
-                        id: "q7",
-                        title: "7. סגירת ערעורים המונית (UPDATE + LIKE)",
-                        code: `UPDATE Appeal\nSET IsResolved = 1\nWHERE Reason LIKE '%Logistical issue%';`,
-                        lineByLine: [
-                            { code: "SET IsResolved = 1", text: "עדכון השדה הבוליאני (BIT) ל-1, המייצג אמת/טופל." },
-                            { code: "WHERE Reason LIKE", text: "שימוש באופרטור התאמת תבניות (Pattern matching) במקום שיוויון מוחלט." },
-                            { code: "'%Logistical issue%'", text: "תווי ה-Wildcard (אחוזים) מורים למנוע לאתר את המחרוזת 'Logistical issue' בכל מקום בתוך הטקסט, ללא תלות במה שכתוב לפניה או אחריה." }
-                        ]
-                    },
-                    {
-                        id: "q8",
-                        title: "8. הוספת יום מיון למתקן (INSERT)",
-                        code: `INSERT INTO ScreeningEvent (EventDate, FacilityID, StaffID)\nVALUES ('2026-03-10 08:00:00', 1, '9111111');`,
-                        lineByLine: [
-                            { code: "INSERT INTO ... (...)", text: "פקודת הזנת שורה חדשה. בסוגריים הראשונים מפורטים שמות העמודות שאליהן אני רוצה להזין נתונים." },
-                            { code: "VALUES (...)", text: "הערכים להזנה, מסודרים בדיוק לפי סדר העמודות שהוגדר למעלה. מפתחות זרים (FacilityID=1, StaffID='9111111') חייבים להיות קיימים בטבלאות האם שלהם." }
-                        ]
-                    },
-                    {
-                        id: "q9",
-                        title: "9. מחיקת מלש\"ב מהמערכת (DELETE)",
-                        code: `DELETE FROM Candidate\nWHERE CandidateID = '616161616';`,
-                        lineByLine: [
-                            { code: "DELETE FROM Candidate", text: "הצהרה על מחיקת שורות מטבלת Candidate." },
-                            { code: "WHERE CandidateID =", text: "זיהוי ייחודי של הרשומה למחיקה. עקב אילוץ ON DELETE CASCADE שהגדרתי בחלק מהטבלאות (כמו Appeal ו-CandidatePhone), גם הנתונים המקושרים לשורה זו יימחקו אוטומטית למניעת יתומים." }
-                        ]
-                    }
-                ]
-            },
-            {
-                category: "בונוס: View ו- Stored Procedure",
-                icon: "🚀",
-                items: [
-                    {
-                        id: "q10",
-                        title: "10. יצירת תצוגה וירטואלית מותאמת (VIEW)",
-                        code: `CREATE VIEW CandidateProfileView AS\nSELECT\n  C.CandidateID,\n  C.FirstName + ' ' + C.LastName AS FullName,\n  T.TrackName,\n  CT.FinalScore,\n  CT.Status\nFROM Candidate C\nLEFT JOIN Candidate_Track CT ON C.CandidateID = CT.CandidateID\nLEFT JOIN Track T ON CT.TrackID = T.TrackID;\nGO\n\nSELECT * FROM CandidateProfileView;`,
-                        lineByLine: [
-                            { code: "CREATE VIEW ... AS", text: "פקודת DDL היוצרת אובייקט במערכת (טבלה וירטואלית). היא אינה שומרת נתונים, אלא רק את משפט ה-SELECT עצמו." },
-                            { code: "LEFT JOIN", text: "שימוש בצירוף שמאלי כדי להציג את כל המלש\"בים, גם את אלו שטרם שובצו למסלול או טרם קיבלו ציון." },
-                            { code: "SELECT * FROM CandidateProfileView", text: "שליפה פשוטה מתוך ה-View, אשר 'מאחורי הקלעים' מריצה את השאילתה המורכבת ומציגה נתונים עדכניים בזמן אמת." }
-                        ]
-                    },
-                    {
-                        id: "q11",
-                        title: "11. שגרה מאוחסנת להזנת מלש\"ב (PROCEDURE)",
-                        code: `CREATE PROCEDURE AddNewCandidate\n  @ID VARCHAR(9),\n  @FName VARCHAR(50),\n  @LName VARCHAR(50),\n  @BYear INT\nAS\nBEGIN\n  INSERT INTO Candidate (CandidateID, FirstName, LastName, BirthYear)\n  VALUES (@ID, @FName, @LName, @BYear);\nEND;\nGO\n\nEXEC AddNewCandidate '999888777', 'Moshe', 'Cohen', 2007;`,
-                        lineByLine: [
-                            { code: "CREATE PROCEDURE", text: "יצירת שגרה מאוחסנת (Stored Procedure), בלוק קוד שניתן לקרוא לו שוב ושוב." },
-                            { code: "@ID, @FName...", text: "הגדרת משתנים/פרמטרים שיקבלו את הנתונים בזמן הקריאה. שימוש בפרמטרים מונע התקפות SQL Injection ומשפר את האבטחה." },
-                            { code: "AS BEGIN ... END", text: "תחימת גוף הפונקציה שבה מתבצעת הפקודה בפועל." },
-                            { code: "EXEC AddNewCandidate", text: "הפעלת השגרה (Execute) יחד עם העברת הארגומנטים המתאימים להזנה." }
-                        ]
-                    }
-                ]
-            }
-        ];
+    <div class="reveal">
+        <p>היום זהו יום משמעותי האהבה שלנו נולדה מחדש למעשה אני מרגיש בכל יום שנגמר שאהבה שלנו מתעצמת וגודלת ואני גם מרגיש שאין לזה סוף.</p>
+    </div>
 
-        // =========================================================
-        // DATA: מדריך סינטקס (נוסף לבקשתך!)
-        // =========================================================
-        const syntaxData = [
-            {
-                title: "SELECT & WHERE - שליפה וסינון",
-                icon: "🔎",
-                syntax: "SELECT column1, column2\nFROM TableName\nWHERE condition\nORDER BY column ASC/DESC;",
-                explanation: "פקודת הבסיס. SELECT בוחר אילו עמודות להציג, FROM אומר מאיזו טבלה, WHERE מסנן איזה שורות יעברו, ו-ORDER BY ממיין את התוצאה הסופית.",
-                exampleCode: "SELECT FirstName, LastName, BirthYear\nFROM Candidate\nWHERE BirthYear >= 2006\nORDER BY BirthYear DESC;",
-                exampleDesc: "שולף את השמות ושנת הלידה של כל המלש\"בים שנולדו מ-2006 והלאה (כולל), ומסדר אותם מהצעיר למבוגר (DESC)."
-            },
-            {
-                title: "GROUP BY & Aggregation - קיבוץ ופונקציות צבירה",
-                icon: "🧮",
-                syntax: "SELECT column1, COUNT(column2)\nFROM TableName\nGROUP BY column1;",
-                explanation: "פונקציות צבירה (COUNT, SUM, AVG, MAX, MIN) עושות חישוב על קבוצת שורות. חובה להשתמש ב-GROUP BY על כל עמודה רגילה שבחרנו ב-SELECT כדי שה-SQL ידע איך לחלק את הקבוצות.",
-                exampleCode: "SELECT StaffID, COUNT(EventID) AS TotalEvents\nFROM ScreeningEvent\nGROUP BY StaffID;",
-                exampleDesc: "סופר כמה ימי מיון (EventID) מנהל כל איש סגל. המערכת מקבצת את כל השורות של אותו StaffID וסופרת כמה שורות יש בכל קבוצה."
-            },
-            {
-                title: "HAVING - סינון קבוצות (אחרי הקיבוץ)",
-                icon: "⚖️",
-                syntax: "SELECT column1, COUNT(column2)\nFROM TableName\nGROUP BY column1\nHAVING COUNT(column2) > value;",
-                explanation: "תזכורת ברזל: WHERE מסנן שורות בודדות לפני הקיבוץ. HAVING בא תמיד אחרי GROUP BY ומסנן את הקבוצות עצמן (לפי התוצאה של פונקציית הצבירה, כי אי אפשר לשים פונקציית צבירה ב-WHERE).",
-                exampleCode: "SELECT TrackID, AVG(FinalScore) AS AvgScore\nFROM Candidate_Track\nGROUP BY TrackID\nHAVING AVG(FinalScore) > 80;",
-                exampleDesc: "מחשב ממוצע ציונים לכל מסלול (TrackID), אבל מציג בסוף רק את הקבוצות (מסלולים) שהממוצע שלהם גדול מ-80."
-            },
-            {
-                title: "JOIN - צירוף טבלאות",
-                icon: "🔗",
-                syntax: "SELECT A.col1, B.col2\nFROM TableA A\nJOIN TableB B ON A.PrimaryKey = B.ForeignKey;",
-                explanation: "מחבר שורות משתי טבלאות לפי קשר הגיוני (לרוב מפתח ראשי וזר). INNER JOIN מביא רק שורות שיש להן התאמה בשתי הטבלאות. LEFT JOIN יביא את כל השורות מהטבלה השמאלית גם אם אין התאמה (וישים NULL).",
-                exampleCode: "SELECT S.StaffName, SE.EventDate\nFROM Staff S\nJOIN ScreeningEvent SE ON S.StaffID = SE.StaffID;",
-                exampleDesc: "מציג את שם איש הסגל ואת התאריכים של ימי המיון שהוא מנהל. החיבור נעשה דרך תעודת הזהות של איש הסגל המשותפת לשתי הטבלאות."
-            },
-            {
-                title: "UPDATE - עדכון נתונים",
-                icon: "✏️",
-                syntax: "UPDATE TableName\nSET column1 = value1, column2 = value2\nWHERE condition;",
-                explanation: "מעדכן רשומות קיימות בטבלה. חוק סופר-חשוב: תמיד להשתמש ב-WHERE! בלעדיו, העדכון יחול על כל השורות בטבלה ויהרוס את הנתונים.",
-                exampleCode: "UPDATE Candidate_Track\nSET Status = 'Accepted'\nWHERE FinalScore >= 95;",
-                exampleDesc: "ניגש לטבלת השיבוצים והציונים, ומעדכן את הסטטוס ל-'Accepted' (התקבל) אך ורק עבור מלש\"בים שהציון הסופי שלהם הוא 95 ומעלה."
-            }
-        ];
+    <div class="month-section reveal">
+        <div class="month-title">חודש שני</div>
+        <img src="1000673519.jpg" class="month-img" alt="חודש 2">
+    </div>
 
-        // =========================================================
-        // UI COMPONENTS
-        // =========================================================
+    <div class="reveal">
+        <p>זה מרגיש הנשמות שלנו נפגשו אחרי שהיו כמהות לזה, אני לא הייתי עובר את שנת הי'ג המתישה הזאת בלעדייך ובלי העידוד והתחושה שיש לי מישהי שתמיד מחכה לי ואני לה.</p>
+    </div>
 
-        const TableCard = ({ table }) => (
-            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg">
-                <div className="p-6 border-b border-slate-700 bg-slate-800/80 flex items-center justify-between">
-                    <h3 className="text-2xl font-black text-slate-100 flex items-center gap-3">
-                        <span className="text-3xl">{table.icon}</span>
-                        {table.hebrewName} <span className="text-blue-400 font-mono text-xl">({table.name})</span>
-                    </h3>
-                </div>
-                <div className="p-6 md:p-8">
-                    <p className="text-slate-300 text-lg mb-6 leading-relaxed">{table.desc}</p>
+    <div class="month-section reveal">
+        <div class="month-title">חודש שלישי</div>
+        <img src="1000673522.jpg" class="month-img" alt="חודש 3">
+    </div>
 
-                    <div className="bg-blue-900/20 border border-blue-800/50 p-5 rounded-xl mb-8 flex gap-4">
-                        <span className="text-2xl mt-1">🧠</span>
-                        <div>
-                            <span className="text-xs font-black text-blue-400 tracking-widest mb-1 block uppercase">ההיגיון שלי בתכנון (מה להגיד לבוחנת)</span>
-                            <p className="text-blue-100/90 leading-relaxed font-medium">{table.logic}</p>
-                        </div>
-                    </div>
+    <div class="reveal">
+        <p>ואת היית צריכה אותי אחרי מה שקרה עם החברות.</p>
+        <p>הכל היה מתוזמן מלמעלה, והכל תמיד מסתדר בסוף.</p>
+    </div>
 
-                    <div className="overflow-x-auto rounded-xl border border-slate-700 bg-slate-900/50">
-                        <table className="w-full text-right border-collapse">
-                            <thead>
-                                <tr className="bg-slate-800 text-slate-300 text-sm uppercase tracking-wider">
-                                    <th className="py-3 px-4 border-b border-slate-700">שם העמודה</th>
-                                    <th className="py-3 px-4 border-b border-slate-700">סוג נתונים</th>
-                                    <th className="py-3 px-4 border-b border-slate-700 text-center">אילוצים (Constraints)</th>
-                                    <th className="py-3 px-4 border-b border-slate-700 w-1/2">תפקיד / הסבר</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-slate-300 text-[15px]">
-                                {table.columns.map((col, idx) => (
-                                    <tr key={idx} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
-                                        <td className="py-4 px-4 font-mono text-blue-300 font-bold">{col.name}</td>
-                                        <td className="py-4 px-4 font-mono text-purple-300 text-sm">{col.type}</td>
-                                        <td className="py-4 px-4 text-center">
-                                            {col.constraints !== "-" ? (
-                                                <div className="flex flex-wrap gap-1 justify-center">
-                                                    {col.constraints.split(',').map(c =>
-                                                        <span key={c} className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider
-                                                            ${c.trim() === 'PK' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                                                              c.trim() === 'FK' ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30' :
-                                                              'bg-slate-700 text-slate-300 border border-slate-600'}
-                                                        `}>
-                                                            {c.trim()}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <span className="text-slate-600">-</span>
-                                            )}
-                                        </td>
-                                        <td className="py-4 px-4 text-slate-400 leading-snug">{col.details}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        );
+    <div class="month-section reveal">
+        <div class="month-title">חודש רביעי</div>
+        <img src="1000673523.jpg" class="month-img" alt="חודש 4">
+    </div>
 
-        const QueryCard = ({ data }) => (
-            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg backdrop-blur-sm">
-                <div className="p-5 border-b border-slate-700 bg-slate-900/80">
-                    <h3 className="text-xl font-black text-slate-100 flex items-center gap-2">
-                        <span className="text-blue-500 font-mono">{data.title.split('.')[0]}.</span>
-                        {data.title.split('.')[1]}
-                    </h3>
-                </div>
-                <div className="p-6 md:p-8">
-                    <div className="mb-6 relative rounded-xl overflow-hidden shadow-xl border border-slate-600 bg-black">
-                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 font-bold tracking-widest uppercase rounded-bl-lg">SQL Syntax</div>
-                        <pre className="code-block p-6 pt-10 overflow-x-auto text-sm text-blue-300"><code>{data.code}</code></pre>
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-slate-300 text-sm uppercase tracking-widest mb-4 border-b border-slate-700 pb-2">ניתוח טכני לבוחנת:</h4>
-                        <div className="space-y-3">
-                            {data.lineByLine.map((line, idx) => (
-                                <div key={idx} className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
-                                    <div className="mb-2"><code className="inline-code">{line.code}</code></div>
-                                    <p className="text-slate-400 text-sm leading-relaxed border-r-2 border-blue-500/50 pr-2">{line.text}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+    <div class="reveal">
+        <p>תשעה חודשים זה כבר פז"ם רציני.</p>
+        <p>אבל אני עדיין זוכר את הפעם הראשונה שראיתי אותך, איך שמשום מה על אף שלא היה לי שום נסיון קודם בדייטים וזה היה רחוק מהבית, לא הרגשתי שום פחד או חשש והכל היה כלכך טבעי התחבקנו דיברנו היה כלכך רגיל כאילו שזה כבר דייט עשירי.</p>
+        <p>כשאני מסתכל על זה היום אני מרגיש כאילו מישהו למעלה הוזיז את החוטים וסידר את זה.</p>
+    </div>
 
-        const SyntaxCard = ({ data }) => (
-            <div className="mb-10 rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden shadow-lg">
-                <div className="p-5 border-b border-slate-700 bg-slate-800/80">
-                    <h3 className="text-2xl font-black text-slate-100 flex items-center gap-3">
-                        <span className="text-3xl">{data.icon}</span>
-                        {data.title}
-                    </h3>
-                </div>
-                <div className="p-6 md:p-8">
-                    <p className="text-slate-300 text-lg mb-6 leading-relaxed">{data.explanation}</p>
+    <div class="month-section reveal">
+        <div class="month-title">חודש חמישי</div>
+        <img src="1000673527.jpg" class="month-img" alt="חודש 5">
+    </div>
 
-                    <h4 className="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2">איך כותבים את זה (הנוסחה):</h4>
-                    <div className="mb-6 rounded-xl overflow-hidden border border-slate-600 bg-black">
-                        <pre className="code-block p-4 text-sm text-amber-300 opacity-80"><code>{data.syntax}</code></pre>
-                    </div>
+    <div class="reveal">
+        <p>לא הגיוני שמלדבר שבוע וקצת בטלפון ומההתחלה הכי מוזרה ומצחיקה שיש הגענו לזה אני ואת נועם זה חיבור אלוקי ואני עומד מאחוריי המילים האלו.</p>
+    </div>
 
-                    <h4 className="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2 flex items-center gap-2">
-                        <span className="text-blue-400">דוגמה מהפרויקט שלך:</span>
-                    </h4>
-                    <div className="relative rounded-xl overflow-hidden border border-blue-600 bg-[#0a0f1c] mb-4">
-                        <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] px-3 py-1 font-bold tracking-widest uppercase rounded-bl-lg">EXAMPLE</div>
-                        <pre className="code-block p-5 pt-8 text-sm text-blue-300"><code>{data.exampleCode}</code></pre>
-                    </div>
-                    <p className="text-blue-200 text-sm bg-blue-900/30 p-3 rounded-lg border border-blue-800/50">
-                        <strong>הסבר הדוגמה:</strong> {data.exampleDesc}
-                    </p>
-                </div>
-            </div>
-        );
+    <div class="month-section reveal">
+        <div class="month-title">חודש שישי</div>
+        <img src="1000673530.jpg" class="month-img" alt="חודש 6">
+    </div>
 
-        const App = () => {
-            const [activeView, setActiveView] = useState('schema');
+    <div class="reveal">
+        <p>שאני מתגעגע אני מתגעגע, ושאני אוהב אני אוהב.</p>
+        <p>ולפעמים אני כלכך רוצה אותך שקשה לי שאת לא איתי ואני מצטער אם גרמתי לך להרגיש שאני רכושני מדי ורוצה אותך כל יום כל היום אבל זאת האמת, קשה לי שאנחנו לא ביחד תמיד אבל בליבי אני יודע שזה הדבר הכי טוב שיש בקשר שלנו, כי ברגע שנעבור את התקופה הזאתי, וכן היא תעבור אנחנו נצא כלכך חזקים ממנה.</p>
+    </div>
 
-            return (
-                <div className="min-h-screen flex flex-col md:flex-row">
+    <div class="month-section reveal">
+        <div class="month-title">חודש שביעי</div>
+        <img src="1000673533.jpg" class="month-img" alt="חודש 7">
+    </div>
 
-                    {/* Sidebar Navigation */}
-                    <div className="w-full md:w-72 bg-slate-950 border-l border-slate-800 flex flex-col sticky top-0 md:h-screen shadow-2xl z-20">
-                        <div className="p-8 border-b border-slate-800">
-                            <h1 className="text-2xl font-black mb-1 text-white">פרויקט SQL</h1>
-                            <p className="text-blue-400 font-medium text-sm">נועם רפופורט</p>
-                        </div>
+    <div class="reveal">
+        <p>אני לא יודע מה האכילו אותך בילדות, כנראה שדייסת ערכים וחלב אהבה.</p>
+        <p>את בן אדם מושלם את אוהבת את עוזרת את תומכת לא רק לי אני רואה מהצד כמה אוהבים ומוקירים אותך, אני מתמלא גאווה לראות אותך בטקסים, לראות את ההישגים שלך ולראות בנות רנדומליות ברחוב מחמיאות לך.</p>
+        <p>כל ההישגים שלי מתגמדים לעומת ההישג שאני ואת בזוגיות.</p>
+        <p>אני תמיד אומר לך ואני אומר גם עכשיו - איזה כיף לי שאת לא רק יפה את גם חכמה, אבל אוסיף ואומר את לא רק חכמה את גם אדיבה, נחמדה, מצחיקה, שואפת למצויינות וזה כל מה שאני צריך בבת.</p>
+    </div>
 
-                        <div className="flex flex-col mt-4">
-                            <button
-                                onClick={() => setActiveView('schema')}
-                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'schema' ? 'tab-active' : 'tab-inactive'}`}
-                            >
-                                <span className="text-2xl">🗄️</span>
-                                מילון הטבלאות
-                            </button>
-                            <button
-                                onClick={() => setActiveView('queries')}
-                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'queries' ? 'tab-active' : 'tab-inactive'}`}
-                            >
-                                <span className="text-2xl">💻</span>
-                                מנתח השאילתות
-                            </button>
-                            {/* New Tab Added Here! */}
-                            <button
-                                onClick={() => setActiveView('syntax')}
-                                className={`w-full text-right p-5 text-lg transition-colors flex items-center gap-3 ${activeView === 'syntax' ? 'tab-active' : 'tab-inactive'}`}
-                            >
-                                <span className="text-2xl">📖</span>
-                                מדריך סינטקס (חוקים)
-                            </button>
-                        </div>
-                    </div>
+    <div class="month-section reveal">
+        <div class="month-title">חודש שמיני</div>
+        <img src="1000673536.jpg" class="month-img" alt="חודש 8">
+    </div>
 
-                    {/* Main Content Area */}
-                    <div className="flex-1 overflow-y-auto scroll-smooth bg-[#0a0f1c] p-6 md:p-12 pb-32">
-                        <div className="max-w-5xl mx-auto">
+    <div class="reveal">
+        <p>אני מחפש משפט יפה אבל לא מוצא מילים איתך. אז קחי קצת משפטים דביליים:</p>
+        <ul>
+            <li>אני אוהב אותך יותר ממה שאת אוהבת סושי</li>
+            <li>אני אוהב אותך יותר מכמה שליה אוהבת להצטרף לדייטים שלנו</li>
+            <li>אני אוהב אותך יותר מכמה שאת רוצה אייפון חדש</li>
+        </ul>
+        <p>ועכשיו ברצינות, אני אוהב אותך יותר מכל דבר אחר בעולם הזה.</p>
+        <p>לא מסוגל לקמט את זה למילים, אני פשוט באמת נשביתי בקסם שלך.</p>
+    </div>
 
-                            {activeView === 'schema' && (
-                                <div className="fade-in">
-                                    <div className="mb-10">
-                                        <h2 className="text-4xl font-black text-white mb-3">מילון הטבלאות (Data Dictionary)</h2>
-                                        <p className="text-slate-400 text-lg">מעבר על מבנה המסד, סוגי נתונים, מפתחות PK/FK, וההיגיון מאחורי כל טבלה בפרויקט IDF Selections.</p>
-                                    </div>
-                                    <div className="space-y-8">
-                                        {schemaData.map(table => <TableCard key={table.name} table={table} />)}
-                                    </div>
-                                </div>
-                            )}
+    <div class="month-section reveal">
+        <div class="month-title">חודש תשיעי</div>
+        <div class="question-mark-container">
+            <span class="question-mark">?</span>
+        </div>
+    </div>
 
-                            {activeView === 'queries' && (
-                                <div className="fade-in">
-                                    <div className="mb-10">
-                                        <h2 className="text-4xl font-black text-white mb-3">מנתח השאילתות (Query Analyzer)</h2>
-                                        <p className="text-slate-400 text-lg">ניתוח טכני של כל 11 השאילתות בפרויקט (שליפות, פעולות DML, והבונוסים).</p>
-                                    </div>
-                                    {queriesData.map((category, idx) => (
-                                        <div key={idx} className="mb-16">
-                                            <h3 className="text-2xl font-black text-slate-200 mb-6 flex items-center gap-3 border-b border-slate-800 pb-3">
-                                                <span>{category.icon}</span> {category.category}
-                                            </h3>
-                                            <div className="grid lg:grid-cols-2 gap-8">
-                                                {category.items.map(item => <QueryCard key={item.id} data={item} />)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+    <div class="reveal">
+        <p style="text-align: center; font-size: 1.8em; font-weight: bold; margin-top: 40px;">לעוד 9 חודשים ואז עוד 9 שנים ואז עוד 90 שנה.<br>אמן ❤️</p>
+        <div class="signature">Yours, NR</div>
+    </div>
 
-                            {/* New Content View for Syntax Guide */}
-                            {activeView === 'syntax' && (
-                                <div className="fade-in">
-                                    <div className="mb-10">
-                                        <h2 className="text-4xl font-black text-white mb-3">מדריך סינטקס (חוקים ותבניות)</h2>
-                                        <p className="text-slate-400 text-lg">שכחת איך כותבים JOIN או HAVING? כאן תמצא את הנוסחאות המדויקות יחד עם דוגמאות חדשות מהפרויקט שלך.</p>
-                                    </div>
-                                    <div className="space-y-8">
-                                        {syntaxData.map((syntaxItem, idx) => <SyntaxCard key={idx} data={syntaxItem} />)}
-                                    </div>
-                                </div>
-                            )}
+</div>
 
-                        </div>
-                    </div>
-
-                </div>
-            );
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                // If element is in view, add the 'active' class to animate it in
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        // Select all elements with the 'reveal' class and observe them
+        document.querySelectorAll('.reveal').forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
+
 </body>
 </html>
