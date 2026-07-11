@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -16,6 +15,91 @@
             padding: 20px;
             color: #3e2723;
         }
+        
+        /* Quiz Styles */
+        #quiz-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fffdf8;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        #quiz-container::before, #quiz-container::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            right: -10px;
+            height: 30px;
+            background: linear-gradient(to bottom, #bcaaa4, #8d6e63);
+            border-radius: 15px;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.3), 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        #quiz-container::before { top: -15px; }
+        #quiz-container::after { bottom: -15px; }
+        
+        #quiz-container h1 {
+            font-family: 'Heebo', sans-serif;
+            font-size: 2.2em;
+            color: #5d4037;
+            margin-bottom: 10px;
+        }
+        #quiz-container p.subtitle {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 30px;
+            text-align: right;
+            background: #fdfaf5;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #efe4d5;
+        }
+        .question h3 {
+            font-family: 'Heebo', sans-serif;
+            color: #5d4037;
+            margin-bottom: 15px;
+            margin-top: 0;
+        }
+        .options label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .options label:hover {
+            color: #8d6e63;
+        }
+        .submit-btn {
+            background-color: #8d6e63;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            font-family: 'Heebo', sans-serif;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #5d4037;
+            transform: scale(1.05);
+        }
+        #error-msg {
+            color: #d32f2f;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+            display: none;
+        }
+
+        /* Megila Styles */
         .megila-container {
             max-width: 800px;
             margin: 0 auto;
@@ -24,6 +108,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border-radius: 10px;
             position: relative;
+            display: none; /* Hidden initially */
         }
         /* Create the scroll "poles" effect */
         .megila-container::before, .megila-container::after {
@@ -40,20 +125,20 @@
         .megila-container::before { top: -15px; }
         .megila-container::after { bottom: -15px; }
 
-        h1 {
+        h1.megila-title {
             font-family: 'Heebo', sans-serif;
             text-align: center;
             font-size: 2.8em;
             margin-bottom: 40px;
             color: #5d4037;
         }
-        p {
+        p.content-p {
             font-size: 1.4em;
             line-height: 1.8;
             margin-bottom: 20px;
             text-align: justify;
         }
-        ul {
+        ul.content-ul {
             font-size: 1.4em;
             line-height: 1.8;
             margin-bottom: 20px;
@@ -131,9 +216,9 @@
         }
         
         @media(max-width: 600px) {
-            p, ul { font-size: 1.1em; }
-            h1 { font-size: 2em; }
-            .megila-container { padding: 30px 20px; }
+            p.content-p, ul.content-ul, .options label { font-size: 1.1em; }
+            h1.megila-title { font-size: 2em; }
+            .megila-container, #quiz-container { padding: 30px 20px; }
             .month-img { max-height: 350px; }
             .question-mark-container { width: 180px; height: 180px; }
             .question-mark { font-size: 80px; }
@@ -142,13 +227,53 @@
 </head>
 <body>
 
-<div class="megila-container">
-    <h1>לנועם שלי ❤️</h1>
+<!-- שאלון כניסה -->
+<div id="quiz-container">
+    <h1>רגע אחד! 🛑</h1>
+    <p class="subtitle">כדי לקרוא את המגילה, עליך להוכיח שאת באמת נועם שלי 😉</p>
+    
+    <div class="question">
+        <h3>1. מה הכינוי שלנו?</h3>
+        <div class="options">
+            <label><input type="radio" name="q1" value="מאמי"> מאמי</label>
+            <label><input type="radio" name="q1" value="בוני"> בוני</label>
+            <label><input type="radio" name="q1" value="לוני"> לוני</label>
+            <label><input type="radio" name="q1" value="נוני"> נוני</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <h3>2. מתי נפגשנו לראשונה?</h3>
+        <div class="options">
+            <label><input type="radio" name="q2" value="8.10"> 8.10</label>
+            <label><input type="radio" name="q2" value="9.10"> 9.10</label>
+            <label><input type="radio" name="q2" value="11.10"> 11.10</label>
+            <label><input type="radio" name="q2" value="10.10"> 10.10</label>
+        </div>
+    </div>
+
+    <div class="question">
+        <h3>3. כמה נועם אוהב אותך?</h3>
+        <div class="options">
+            <label><input type="radio" name="q3" value="100"> 100</label>
+            <label><input type="radio" name="q3" value="1000"> 1000</label>
+            <label><input type="radio" name="q3" value="1000000000"> 1000000000</label>
+            <label><input type="radio" name="q3" value="אין מספר שייתאר את האהבה"> אין מספר שייתאר את האהבה</label>
+        </div>
+    </div>
+
+    <button class="submit-btn" onclick="checkAnswers()">היכנסי למגילה ❤️</button>
+    <p id="error-msg">אופס! נראה שיש פה טעות... נסי שוב!</p>
+</div>
+
+<!-- המגילה (מוסתרת בהתחלה) -->
+<div class="megila-container" id="megila-content">
+    <h1 class="megila-title">לנועם שלי ❤️</h1>
     
     <div class="reveal">
-        <p>נועם שלי, איזה כיף להגיד שלי כמה זכיתי בך אין לך מושג.</p>
-        <p>היום אנחנו חוגגים תשעה חודשים ביחד.</p>
-        <p>כזמן שלוקח לתינוק להוולד כך אני מרגיש בדיוק שהאהבה שלנו היא תינוק שגודל לאט לאט והיום הוא יצא מהבטן אל העולם האמיתי, אני מסיים טירונות ויוצא לדרך חדשה ואת בקרוב מסכמת את התיכון בחגיגות הפרום ומתגייסת בעצמך.</p>
+        <p class="content-p">נועם שלי, איזה כיף להגיד שלי כמה זכיתי בך אין לך מושג.</p>
+        <p class="content-p">היום אנחנו חוגגים תשעה חודשים ביחד.</p>
+        <p class="content-p">כזמן שלוקח לתינוק להוולד כך אני מרגיש בדיוק שהאהבה שלנו היא תינוק שגודל לאט לאט והיום הוא יצא מהבטן אל העולם האמיתי, אני מסיים טירונות ויוצא לדרך חדשה ואת בקרוב מסכמת את התיכון בחגיגות הפרום ומתגייסת בעצמך.</p>
     </div>
 
     <div class="month-section reveal">
@@ -157,7 +282,7 @@
     </div>
 
     <div class="reveal">
-        <p>היום זהו יום משמעותי האהבה שלנו נולדה מחדש למעשה אני מרגיש בכל יום שנגמר שאהבה שלנו מתעצמת וגודלת ואני גם מרגיש שאין לזה סוף.</p>
+        <p class="content-p">היום זהו יום משמעותי האהבה שלנו נולדה מחדש למעשה אני מרגיש בכל יום שנגמר שאהבה שלנו מתעצמת וגודלת ואני גם מרגיש שאין לזה סוף.</p>
     </div>
 
     <div class="month-section reveal">
@@ -166,7 +291,7 @@
     </div>
 
     <div class="reveal">
-        <p>זה מרגיש הנשמות שלנו נפגשו אחרי שהיו כמהות לזה, אני לא הייתי עובר את שנת הי'ג המתישה הזאת בלעדייך ובלי העידוד והתחושה שיש לי מישהי שתמיד מחכה לי ואני לה.</p>
+        <p class="content-p">זה מרגיש הנשמות שלנו נפגשו אחרי שהיו כמהות לזה, אני לא הייתי עובר את שנת הי'ג המתישה הזאת בלעדייך ובלי העידוד והתחושה שיש לי מישהי שתמיד מחכה לי ואני לה.</p>
     </div>
 
     <div class="month-section reveal">
@@ -175,8 +300,8 @@
     </div>
 
     <div class="reveal">
-        <p>ואת היית צריכה אותי אחרי מה שקרה עם החברות.</p>
-        <p>הכל היה מתוזמן מלמעלה, והכל תמיד מסתדר בסוף.</p>
+        <p class="content-p">ואת היית צריכה אותי אחרי מה שקרה עם החברות.</p>
+        <p class="content-p">הכל היה מתוזמן מלמעלה, והכל תמיד מסתדר בסוף.</p>
     </div>
 
     <div class="month-section reveal">
@@ -185,9 +310,9 @@
     </div>
 
     <div class="reveal">
-        <p>תשעה חודשים זה כבר פז"ם רציני.</p>
-        <p>אבל אני עדיין זוכר את הפעם הראשונה שראיתי אותך, איך שמשום מה על אף שלא היה לי שום נסיון קודם בדייטים וזה היה רחוק מהבית, לא הרגשתי שום פחד או חשש והכל היה כלכך טבעי התחבקנו דיברנו היה כלכך רגיל כאילו שזה כבר דייט עשירי.</p>
-        <p>כשאני מסתכל על זה היום אני מרגיש כאילו מישהו למעלה הוזיז את החוטים וסידר את זה.</p>
+        <p class="content-p">תשעה חודשים זה כבר פז"ם רציני.</p>
+        <p class="content-p">אבל אני עדיין זוכר את הפעם הראשונה שראיתי אותך, איך שמשום מה על אף שלא היה לי שום נסיון קודם בדייטים וזה היה רחוק מהבית, לא הרגשתי שום פחד או חשש והכל היה כלכך טבעי התחבקנו דיברנו היה כלכך רגיל כאילו שזה כבר דייט עשירי.</p>
+        <p class="content-p">כשאני מסתכל על זה היום אני מרגיש כאילו מישהו למעלה הוזיז את החוטים וסידר את זה.</p>
     </div>
 
     <div class="month-section reveal">
@@ -196,7 +321,7 @@
     </div>
 
     <div class="reveal">
-        <p>לא הגיוני שמלדבר שבוע וקצת בטלפון ומההתחלה הכי מוזרה ומצחיקה שיש הגענו לזה אני ואת נועם זה חיבור אלוקי ואני עומד מאחוריי המילים האלו.</p>
+        <p class="content-p">לא הגיוני שמלדבר שבוע וקצת בטלפון ומההתחלה הכי מוזרה ומצחיקה שיש הגענו לזה אני ואת נועם זה חיבור אלוקי ואני עומד מאחוריי המילים האלו.</p>
     </div>
 
     <div class="month-section reveal">
@@ -205,8 +330,8 @@
     </div>
 
     <div class="reveal">
-        <p>שאני מתגעגע אני מתגעגע, ושאני אוהב אני אוהב.</p>
-        <p>ולפעמים אני כלכך רוצה אותך שקשה לי שאת לא איתי ואני מצטער אם גרמתי לך להרגיש שאני רכושני מדי ורוצה אותך כל יום כל היום אבל זאת האמת, קשה לי שאנחנו לא ביחד תמיד אבל בליבי אני יודע שזה הדבר הכי טוב שיש בקשר שלנו, כי ברגע שנעבור את התקופה הזאתי, וכן היא תעבור אנחנו נצא כלכך חזקים ממנה.</p>
+        <p class="content-p">שאני מתגעגע אני מתגעגע, ושאני אוהב אני אוהב.</p>
+        <p class="content-p">ולפעמים אני כלכך רוצה אותך שקשה לי שאת לא איתי ואני מצטער אם גרמתי לך להרגיש שאני רכושני מדי ורוצה אותך כל יום כל היום אבל זאת האמת, קשה לי שאנחנו לא ביחד תמיד אבל בליבי אני יודע שזה הדבר הכי טוב שיש בקשר שלנו, כי ברגע שנעבור את התקופה הזאתי, וכן היא תעבור אנחנו נצא כלכך חזקים ממנה.</p>
     </div>
 
     <div class="month-section reveal">
@@ -215,10 +340,10 @@
     </div>
 
     <div class="reveal">
-        <p>אני לא יודע מה האכילו אותך בילדות, כנראה שדייסת ערכים וחלב אהבה.</p>
-        <p>את בן אדם מושלם את אוהבת את עוזרת את תומכת לא רק לי אני רואה מהצד כמה אוהבים ומוקירים אותך, אני מתמלא גאווה לראות אותך בטקסים, לראות את ההישגים שלך ולראות בנות רנדומליות ברחוב מחמיאות לך.</p>
-        <p>כל ההישגים שלי מתגמדים לעומת ההישג שאני ואת בזוגיות.</p>
-        <p>אני תמיד אומר לך ואני אומר גם עכשיו - איזה כיף לי שאת לא רק יפה את גם חכמה, אבל אוסיף ואומר את לא רק חכמה את גם אדיבה, נחמדה, מצחיקה, שואפת למצויינות וזה כל מה שאני צריך בבת.</p>
+        <p class="content-p">אני לא יודע מה האכילו אותך בילדות, כנראה שדייסת ערכים וחלב אהבה.</p>
+        <p class="content-p">את בן אדם מושלם את אוהבת את עוזרת את תומכת לא רק לי אני רואה מהצד כמה אוהבים ומוקירים אותך, אני מתמלא גאווה לראות אותך בטקסים, לראות את ההישגים שלך ולראות בנות רנדומליות ברחוב מחמיאות לך.</p>
+        <p class="content-p">כל ההישגים שלי מתגמדים לעומת ההישג שאני ואת בזוגיות.</p>
+        <p class="content-p">אני תמיד אומר לך ואני אומר גם עכשיו - איזה כיף לי שאת לא רק יפה את גם חכמה, אבל אוסיף ואומר את לא רק חכמה את גם אדיבה, נחמדה, מצחיקה, שואפת למצויינות וזה כל מה שאני צריך בבת.</p>
     </div>
 
     <div class="month-section reveal">
@@ -227,14 +352,14 @@
     </div>
 
     <div class="reveal">
-        <p>אני מחפש משפט יפה אבל לא מוצא מילים איתך. אז קחי קצת משפטים דביליים:</p>
-        <ul>
+        <p class="content-p">אני מחפש משפט יפה אבל לא מוצא מילים איתך. אז קחי קצת משפטים דביליים:</p>
+        <ul class="content-ul">
             <li>אני אוהב אותך יותר ממה שאת אוהבת סושי</li>
             <li>אני אוהב אותך יותר מכמה שליה אוהבת להצטרף לדייטים שלנו</li>
             <li>אני אוהב אותך יותר מכמה שאת רוצה אייפון חדש</li>
         </ul>
-        <p>ועכשיו ברצינות, אני אוהב אותך יותר מכל דבר אחר בעולם הזה.</p>
-        <p>לא מסוגל לקמט את זה למילים, אני פשוט באמת נשביתי בקסם שלך.</p>
+        <p class="content-p">ועכשיו ברצינות, אני אוהב אותך יותר מכל דבר אחר בעולם הזה.</p>
+        <p class="content-p">לא מסוגל לקמט את זה למילים, אני פשוט באמת נשביתי בקסם שלך.</p>
     </div>
 
     <div class="month-section reveal">
@@ -252,6 +377,32 @@
 </div>
 
 <script>
+    // הפונקציה שבודקת את התשובות
+    function checkAnswers() {
+        const q1 = document.querySelector('input[name="q1"]:checked');
+        const q2 = document.querySelector('input[name="q2"]:checked');
+        const q3 = document.querySelector('input[name="q3"]:checked');
+        
+        const errorMsg = document.getElementById('error-msg');
+
+        if (q1 && q1.value === "נוני" && 
+            q2 && q2.value === "8.10" && 
+            q3 && q3.value === "אין מספר שייתאר את האהבה") {
+            
+            // תקין - מסתירים את השאלון ומציגים את המגילה
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('megila-content').style.display = 'block';
+            
+            // גורמים לדפדפן לחשב מחדש את המסך כדי שהאנימציות יעבדו כראוי
+            window.dispatchEvent(new Event('scroll'));
+            
+        } else {
+            // טעות
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    // הגדרת האנימציות למגילה
     document.addEventListener("DOMContentLoaded", function() {
         const observerOptions = {
             root: null,
@@ -261,14 +412,12 @@
 
         const observer = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
-                // If element is in view, add the 'active' class to animate it in
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
                 }
             });
         }, observerOptions);
 
-        // Select all elements with the 'reveal' class and observe them
         document.querySelectorAll('.reveal').forEach(element => {
             observer.observe(element);
         });
